@@ -9,12 +9,22 @@ CoreOS node up and running do the following:
 
 ```
 git clone https://github.com/coreos/coreos-vagrant/
-cd coreos-vagrant
+cd coreos-vagrant/standalone
 vagrant up
 vagrant ssh
 ```
 
-3) Get started [using CoreOS][using-coreos]
+3) You can test cluster mode
+
+```
+git clone https://github.com/coreos/coreos-vagrant/
+cd coreos-vagrant/cluster
+bundle
+vagrant up
+vagrant ssh core-01
+```
+
+4) Get started [using CoreOS][using-coreos]
 
 [vagrant]: http://downloads.vagrantup.com/
 [using-coreos]: http://coreos.com/docs/using-coreos/
