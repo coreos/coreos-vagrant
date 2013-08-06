@@ -1,0 +1,30 @@
+GIT
+  remote: https://github.com/mitchellh/vagrant.git
+  revision: 1c057191cb47f76cf4179d6b04b8f7798ec5c1dc
+  specs:
+    vagrant (1.2.8.dev)
+      childprocess (~> 0.3.7)
+      erubis (~> 2.7.0)
+      i18n (~> 0.6.0)
+      log4r (~> 1.1.9)
+      net-scp (~> 1.1.0)
+      net-ssh (~> 2.6.6)
+
+GEM
+  remote: https://rubygems.org/
+  specs:
+    childprocess (0.3.9)
+      ffi (~> 1.0, >= 1.0.11)
+    erubis (2.7.0)
+    ffi (1.9.0)
+    i18n (0.6.4)
+    log4r (1.1.10)
+    net-scp (1.1.2)
+      net-ssh (>= 2.6.5)
+    net-ssh (2.6.8)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  vagrant!
