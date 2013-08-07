@@ -20,8 +20,8 @@ vagrant ssh
 git clone https://github.com/coreos/coreos-vagrant/
 cd coreos-vagrant/cluster
 bundle
-vagrant up
-vagrant ssh core-01
+bundle exec vagrant up
+bundle exec vagrant ssh core-01
 ```
 
 4) Get started [using CoreOS][using-coreos]
