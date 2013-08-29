@@ -1,4 +1,4 @@
-# CoreOS Vagrant 
+# CoreOS Vagrant
 
 This repo provides a template Vagrantfile to create a CoreOS virtual machine using the Virtualbox software hypervisor.
 After setup is complete you will have a single CoreOS virtual machine running on your local machine.
@@ -15,6 +15,7 @@ After setup is complete you will have a single CoreOS virtual machine running on
 ```
 git clone https://github.com/coreos/coreos-vagrant/
 cd coreos-vagrant
+# cd vmware if you have vmware + vagrant
 vagrant up
 vagrant ssh
 ```
