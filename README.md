@@ -15,25 +15,43 @@ After setup is complete you will have a single CoreOS virtual machine running on
 ```
 git clone https://github.com/coreos/coreos-vagrant/
 cd coreos-vagrant
-# cd vmware if you have vmware + vagrant
+```
+
+3) Startup and SSH
+
+There are two "providers" for Virtualbox with slightly different instructions.
+Follow one of the folowing two options:
+
+**Virtualbox Provider**
+
+The Virtualbox provider is the default Vagrant provider. Use this if you are unsure.
+
+```
 vagrant up
 vagrant ssh
 ```
 
-``vagrant up`` triggers vagrant to download the CoreOS image (if necessary) and (re)launch the 
-instance
+**VMWare Provider**
 
-``vagrant ssh`` connects you to the virtual machine. Configuration is stored in the 
-directory so you can always return to this machine by executing vagrant ssh from the directory
-where the Vagrantfile was located
+The VMWare provider is a commercial addon from Hashicorp that offers better stability and speed.
+If you use this provider follow these instructions.
 
+```
+cd vmware
+vagrant up --provider vmware_fusion
+vagrant ssh
+```
+
+``vagrant up`` triggers vagrant to download the CoreOS image (if necessary) and (re)launch the instance
+
+``vagrant ssh`` connects you to the virtual machine.
+Configuration is stored in the directory so you can always return to this machine by executing vagrant ssh from the directory where the Vagrantfile was located.
 
 3) Get started [using CoreOS][using-coreos]
 
 [virtualbox]: https://www.virtualbox.org/
 [vagrant]: http://downloads.vagrantup.com/
 [using-coreos]: http://coreos.com/docs/using-coreos/
-
 
 
 ## Alternative Setup 
