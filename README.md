@@ -54,7 +54,21 @@ Configuration is stored in the directory so you can always return to this machin
 [using-coreos]: http://coreos.com/docs/using-coreos/
 
 
-## Alternative Setup 
+## Cluster Setup
+
+This will setup a 3 node cluster with networking setup between the nodes.
+This feature is very new and etcd bootstrapping will be added soon.
+
+```
+git clone https://github.com/coreos/coreos-vagrant/
+cd coreos-vagrant/cluster
+vagrant up
+vagrant ssh core-01
+vagrant ssh core-02
+vagrant ssh core-03
+```
+
+## Alternative Setup
 
 This allows you to run multiple instances without needing to clone the repo each time. It will create a 
 Vagrantfile in your current directory and so, you will be able to (re)connect to the virtual 
