@@ -53,6 +53,14 @@ Configuration is stored in the directory so you can always return to this machin
 [vagrant]: http://downloads.vagrantup.com/
 [using-coreos]: http://coreos.com/docs/using-coreos/
 
+#### Shared Folder Setup
+
+There is optional shared folder setup added in version 72.0.0 of CoreOS.
+You can try it out by adding a section to your Vagrantfile like this.
+
+```
+config.vm.synced_folder ".", "/home/core/share", id: "core", :nfs => true,  :mount_options   => ['nolock,vers=3,udp']
+```
 
 ## Cluster Setup
 
