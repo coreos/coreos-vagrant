@@ -55,7 +55,7 @@ Configuration is stored in the directory so you can always return to this machin
 
 #### Shared Folder Setup
 
-There is optional shared folder setup added in version 72.0.0 of CoreOS.
+There is optional shared folder setup.
 You can try it out by adding a section to your Vagrantfile like this.
 
 ```
