@@ -1,6 +1,9 @@
 #!/bin/bash
 
 # vagrant runs this script as uid=0(root):
+#
+# $1 = this hosts IP address
+# $2 = IP address of the single host chosen to coordinate initial cluster startup
 
 HOSTNAME=$(</proc/sys/kernel/hostname)
 #echo $1 is my IP, $2 will coordinate cluster startup, and I am on ${HOSTNAME}.
@@ -11,6 +14,7 @@ chown core:core /var/run/etcd/${HOSTNAME}
 
 echo $1 > /var/run/etcd/MY_IP
 
+# If we are not the coordinator, we add the -C argument:
 if [[ $1 != $2 ]] ; then
   CLUSTER_OPT="-C $2:7001"
   echo $2 > /var/run/etcd/COORDINATOR
