@@ -1,0 +1,23 @@
+#!/bin/bash
+
+# vagrant runs this script as uid=0(root):
+
+HOSTNAME=$(</proc/sys/kernel/hostname)
+#echo $1 is my IP, $2 will coordinate cluster startup, and I am on ${HOSTNAME}.
+
+
+mkdir /var/run/etcd/${HOSTNAME}
+chown core:core /var/run/etcd/${HOSTNAME}
+
+echo $1 > /var/run/etcd/MY_IP
+
+if [[ $1 != $2 ]] ; then
+  CLUSTER_OPT="-C $2:7001"
+  echo $2 > /var/run/etcd/COORDINATOR
+fi
+
+# Replace the existing line:
+sed -i -e "s@ExecStart=.*@ExecStart=/usr/bin/etcd -s $1:7001 -sl 0.0.0.0 -cl 0.0.0.0 -c $1:4001 ${CLUSTER_OPT} -d /var/run/etcd/${HOSTNAME} -n $HOSTNAME@" /media/state/units/etcd-cluster.service
+
+systemctl daemon-reload
+systemctl restart etcd-cluster.service
