@@ -4,4 +4,11 @@
 Vagrant.configure("2") do |config|
   config.vm.box = "coreos"
   config.vm.box_url = "http://storage.core-os.net/coreos/amd64-generic/dev-channel/coreos_production_vagrant_vmware_fusion.box"
+  # Make sure RTC in VM is set from UTC
+  config.vm.provider "vmware_fusion" do |v|
+    v.vmx["rtc.diffFromUTC"]  = "0"
+  end
+  config.vm.provider "vmware_workstation" do |v|
+    v.vmx["rtc.diffFromUTC"]  = "0"
+  end
 end
