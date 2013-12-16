@@ -63,6 +63,17 @@ config.vm.network "private_network", ip: "172.12.8.150"
 config.vm.synced_folder ".", "/home/core/share", id: "core", :nfs => true,  :mount_options   => ['nolock,vers=3,udp']
 ```
 
+## New Box Versions
+
+CoreOS is a rolling release distribution and versions that are out of date will automatically update.
+If you want to start from the most up to date version you will need to make sure that you have the latest box file of CoreOS.
+Simply remove the old box file and vagrant will download the latest one the next time you `vagrant up`.
+
+```
+vagrant box remove coreos vmware_fusion
+vagrant box remove coreos virtualbox
+```
+
 ## Cluster Setup
 
 This will setup a 3 node cluster with networking setup between the nodes.
