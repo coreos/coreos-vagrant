@@ -37,7 +37,6 @@ The VMWare provider is a commercial addon from Hashicorp that offers better stab
 If you use this provider follow these instructions.
 
 ```
-cd vmware
 vagrant up --provider vmware_fusion
 vagrant ssh
 ```
