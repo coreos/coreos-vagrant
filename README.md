@@ -62,6 +62,8 @@ config.vm.network "private_network", ip: "172.12.8.150"
 config.vm.synced_folder ".", "/home/core/share", id: "core", :nfs => true,  :mount_options   => ['nolock,vers=3,udp']
 ```
 
+After a 'vagrant reload' you will be prompted for your local machine password.
+
 ## New Box Versions
 
 CoreOS is a rolling release distribution and versions that are out of date will automatically update.
