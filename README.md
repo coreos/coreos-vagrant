@@ -88,20 +88,3 @@ vagrant ssh core-01
 vagrant ssh core-02
 vagrant ssh core-03
 ```
-
-## Alternative Setup
-
-This allows you to run multiple instances without needing to clone the repo each time. It will create a 
-Vagrantfile in your current directory and so, you will be able to (re)connect to the virtual 
-machine by returning to this directory and running vagrant ssh.
-
-1) [Download and install Vagrant][vagrant] 1.2.3 or greater.
-
-2) Install the vagrant "box" and get it running
-
-```
-vagrant init coreos http://storage.core-os.net/coreos/amd64-generic/dev-channel/coreos_production_vagrant.box
-vagrant up
-vagrant ssh
-```
-
