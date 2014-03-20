@@ -1,6 +1,10 @@
 # -*- mode: ruby -*-
 # # vi: set ft=ruby :
 
+require_relative 'override-plugin.rb'
+
+CLOUD_CONFIG_PATH = "./user-data"
+
 Vagrant.configure("2") do |config|
   config.vm.box = "coreos"
   config.vm.box_url = "http://storage.core-os.net/coreos/amd64-generic/dev-channel/coreos_production_vagrant.box"
@@ -23,4 +27,10 @@ Vagrant.configure("2") do |config|
   if Vagrant.has_plugin?("vagrant-vbguest") then
     config.vbguest.auto_update = false
   end
+
+  if File.exist?(CLOUD_CONFIG_PATH)
+    config.vm.provision :file, :source => "#{CLOUD_CONFIG_PATH}", :destination => "/tmp/user-data"
+    config.vm.provision :shell, :inline => "/usr/bin/coreos-cloudinit --from-file /tmp/user-data", :privileged => true
+  end
+
 end

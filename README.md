@@ -64,6 +64,16 @@ config.vm.synced_folder ".", "/home/core/share", id: "core", :nfs => true,  :mou
 
 After a 'vagrant reload' you will be prompted for your local machine password.
 
+#### Provisioning with user-data
+
+The Vagrantfile will provision your CoreOS VM(s) with [coreos-cloudinit][coreos-cloudinit] if a `user-data` file is found in the project directory.
+coreos-cloudinit simplifies the provisioning process through the use of a script or cloud-config document.
+
+To get started, copy `user-data.sample` to `user-data` and make any necessary modifications.
+Check out the [coreos-cloudinit documentation][coreos-cloudinit] to learn about the available features.
+
+[coreos-cloudinit]: https://github.com/coreos/coreos-cloudinit
+
 ## New Box Versions
 
 CoreOS is a rolling release distribution and versions that are out of date will automatically update.
@@ -88,20 +98,3 @@ vagrant ssh core-01
 vagrant ssh core-02
 vagrant ssh core-03
 ```
-
-## Alternative Setup
-
-This allows you to run multiple instances without needing to clone the repo each time. It will create a 
-Vagrantfile in your current directory and so, you will be able to (re)connect to the virtual 
-machine by returning to this directory and running vagrant ssh.
-
-1) [Download and install Vagrant][vagrant] 1.2.3 or greater.
-
-2) Install the vagrant "box" and get it running
-
-```
-vagrant init coreos http://storage.core-os.net/coreos/amd64-generic/dev-channel/coreos_production_vagrant.box
-vagrant up
-vagrant ssh
-```
-
