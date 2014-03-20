@@ -64,6 +64,16 @@ config.vm.synced_folder ".", "/home/core/share", id: "core", :nfs => true,  :mou
 
 After a 'vagrant reload' you will be prompted for your local machine password.
 
+#### Provisioning with user-data
+
+The Vagrantfile will provision your CoreOS VM(s) with [coreos-cloudinit][coreos-cloudinit] if a `user-data` file is found in the project directory.
+coreos-cloudinit simplifies the provisioning process through the use of a script or cloud-config document.
+
+To get started, copy `user-data.sample` to `user-data` and make any necessary modifications.
+Check out the [coreos-cloudinit documentation][coreos-cloudinit] to learn about the available features.
+
+[coreos-cloudinit]: https://github.com/coreos/coreos-cloudinit
+
 ## New Box Versions
 
 CoreOS is a rolling release distribution and versions that are out of date will automatically update.
