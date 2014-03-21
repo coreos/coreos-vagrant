@@ -81,8 +81,8 @@ If you want to start from the most up to date version you will need to make sure
 Simply remove the old box file and vagrant will download the latest one the next time you `vagrant up`.
 
 ```
-vagrant box remove coreos vmware_fusion
-vagrant box remove coreos virtualbox
+vagrant box remove coreos --provider vmware_fusion
+vagrant box remove coreos --provider virtualbox
 ```
 
 ## Cluster Setup
