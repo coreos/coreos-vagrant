@@ -74,6 +74,11 @@ Check out the [coreos-cloudinit documentation][coreos-cloudinit] to learn about 
 
 [coreos-cloudinit]: https://github.com/coreos/coreos-cloudinit
 
+## Cluster Setup
+
+Launching a CoreOS cluster on Vagrant is as simple as changing the `NUM_INSTANCES` constant in your `Vagrantfile` to 3 (or more!), and running `vagrant up`.
+Make sure you provide a fresh discovery URL in your `user-data` if you wish to bootstrap etcd in your cluster.
+
 ## New Box Versions
 
 CoreOS is a rolling release distribution and versions that are out of date will automatically update.
@@ -83,18 +88,4 @@ Simply remove the old box file and vagrant will download the latest one the next
 ```
 vagrant box remove coreos --provider vmware_fusion
 vagrant box remove coreos --provider virtualbox
-```
-
-## Cluster Setup
-
-This will setup a 3 node cluster with networking setup between the nodes.
-This feature is very new and etcd bootstrapping will be added soon.
-
-```
-git clone https://github.com/coreos/coreos-vagrant/
-cd coreos-vagrant/cluster
-vagrant up
-vagrant ssh core-01
-vagrant ssh core-02
-vagrant ssh core-03
 ```

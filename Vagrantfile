@@ -3,15 +3,13 @@
 
 require_relative 'override-plugin.rb'
 
+NUM_INSTANCES = 1
+
 CLOUD_CONFIG_PATH = "./user-data"
 
 Vagrant.configure("2") do |config|
-  config.vm.box = "coreos"
-  config.vm.box_url = "http://storage.core-os.net/coreos/amd64-generic/dev-channel/coreos_production_vagrant.box"
-
-  # Uncomment below to enable NFS for sharing the host machine into the coreos-vagrant VM.
-  # config.vm.network "private_network", ip: "172.12.8.150"
-  # config.vm.synced_folder ".", "/home/core/share", id: "core", :nfs => true,  :mount_options   => ['nolock,vers=3,udp']
+  config.vm.box = "coreos-alpha"
+  config.vm.box_url = "http://storage.core-os.net/coreos/amd64-usr/alpha/coreos_production_vagrant.box"
 
   # Fix docker not being able to resolve private registry in VirtualBox
   config.vm.provider :virtualbox do |vb, override|
@@ -28,9 +26,21 @@ Vagrant.configure("2") do |config|
     config.vbguest.auto_update = false
   end
 
-  if File.exist?(CLOUD_CONFIG_PATH)
-    config.vm.provision :file, :source => "#{CLOUD_CONFIG_PATH}", :destination => "/tmp/user-data"
-    config.vm.provision :shell, :inline => "/usr/bin/coreos-cloudinit --from-file /tmp/user-data", :privileged => true
-  end
+  (1..NUM_INSTANCES).each do |i|
+    config.vm.define vm_name = "core-%02d" % i do |config|
+      config.vm.hostname = vm_name
 
+      ip = "172.12.8.#{i+100}"
+      config.vm.network :private_network, ip: ip
+
+      # Uncomment below to enable NFS for sharing the host machine into the coreos-vagrant VM.
+      #config.vm.synced_folder ".", "/home/core/share", id: "core", :nfs => true, :mount_options => ['nolock,vers=3,udp']
+
+      if File.exist?(CLOUD_CONFIG_PATH)
+        config.vm.provision :file, :source => "#{CLOUD_CONFIG_PATH}", :destination => "/tmp/user-data"
+        config.vm.provision :shell, :inline => "mkdir -p /var/lib/coreos-vagrant && mv /tmp/user-data /var/lib/coreos-vagrant", :privileged => true
+      end
+
+    end
+  end
 end
