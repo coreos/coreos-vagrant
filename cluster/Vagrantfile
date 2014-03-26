@@ -11,8 +11,18 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       config.vm.box_url = "http://storage.core-os.net/coreos/amd64-generic/dev-channel/coreos_production_vagrant.box"
 
       config.vm.hostname = vm_name
-
+      config.vm.network "forwarded_port", guest: 4001, host: "400#{i}".to_i
       config.vm.network :private_network, ip: "192.168.65.#{i+1}"
+      config.vm.provision "shell" do |s|
+        s.inline = 'sudo rm -rf /home/core/etcd/ &&
+        sudo sed -e "s/-c 4001 -s 7001 -h \([0-9\.]*\)/-addr \1:4001 -peer-addr \1:7001 -name \1/" -i /media/state/units/etcd-cluster.service &&
+        sudo sed -e "s/-C /-peers /" -i /media/state/units/etcd-cluster.service &&
+        sudo sed -e "s/-d /-data-dir /" -i /media/state/units/etcd-cluster.service && 
+        sudo systemctl stop etcd && 
+        sudo systemctl daemon-reload && 
+        sudo systemctl start etcd-cluster && 
+        sudo systemctl start fleet'
+      end
     end
   end
 end
