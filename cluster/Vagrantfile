@@ -11,7 +11,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       config.vm.box_url = "http://storage.core-os.net/coreos/amd64-generic/dev-channel/coreos_production_vagrant.box"
 
       config.vm.hostname = vm_name
-      config.vm.network "forwarded_port", guest: 4001, host: "400#{i}"
+      config.vm.network "forwarded_port", guest: 4001, host: "400#{i}".to_i
       config.vm.network :private_network, ip: "192.168.65.#{i+1}"
       config.vm.provision "shell" do |s|
         s.inline = 'sudo rm -rf /home/core/etcd/ &&
