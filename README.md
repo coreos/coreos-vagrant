@@ -58,7 +58,7 @@ There is optional shared folder setup.
 You can try it out by adding a section to your Vagrantfile like this.
 
 ```
-config.vm.network "private_network", ip: "172.12.8.150"
+config.vm.network "private_network", ip: "172.17.8.150"
 config.vm.synced_folder ".", "/home/core/share", id: "core", :nfs => true,  :mount_options   => ['nolock,vers=3,udp']
 ```
 
