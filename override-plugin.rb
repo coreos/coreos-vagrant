@@ -94,10 +94,6 @@ write_files:
 hostname: #{machine.name}
 EOF
 
-            #TODO(bcwaldon): Remove `touch /etc/environment` once the following commit is released:
-            # https://github.com/coreos/coreos-overlay/commit/68f8f060f41a70a6120ac33e7866dbd2367dfec5
-            comm.sudo("touch /etc/environment")
-
             temp = Tempfile.new("coreos-vagrant")
             temp.write(cfg)
             temp.close
