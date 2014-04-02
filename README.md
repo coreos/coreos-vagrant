@@ -76,7 +76,8 @@ Check out the [coreos-cloudinit documentation][coreos-cloudinit] to learn about 
 
 ## Cluster Setup
 
-Launching a CoreOS cluster on Vagrant is as simple as changing the `NUM_INSTANCES` constant in your `Vagrantfile` to 3 (or more!), and running `vagrant up`.
+Launching a CoreOS cluster on Vagrant is as simple as setting a `NUM_INSTANCES` environment variable to 3 (or more!), and running `vagrant up`.
+If running more than 1 instance, the `NUM_INSTANCES` value must always be set for `vagrant ssh` to function properly.
 Make sure you provide a fresh discovery URL in your `user-data` if you wish to bootstrap etcd in your cluster.
 
 ## New Box Versions
