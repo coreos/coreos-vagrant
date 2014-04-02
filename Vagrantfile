@@ -3,7 +3,7 @@
 
 require_relative 'override-plugin.rb'
 
-NUM_INSTANCES = 1
+NUM_INSTANCES = ENV['NUM_INSTANCES'].to_i || 1
 
 CLOUD_CONFIG_PATH = "./user-data"
 
