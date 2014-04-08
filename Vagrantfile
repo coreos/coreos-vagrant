@@ -5,6 +5,10 @@ require_relative 'override-plugin.rb'
 
 NUM_INSTANCES = (ENV['NUM_INSTANCES'].to_i > 0 && ENV['NUM_INSTANCES'].to_i) || 1
 
+IP_CNET = ENV['IP_CNET'] || "172.17.8"
+IP_BASE = (ENV['IP_BASE'].to_i > 0 && ENV['IP_BASE'].to_i) || 100
+IP_INCR = (ENV['IP_INCR'].to_i > 0 && ENV['IP_INCR'].to_i) || 1
+
 CLOUD_CONFIG_PATH = "./user-data"
 
 Vagrant.configure("2") do |config|
@@ -30,7 +34,8 @@ Vagrant.configure("2") do |config|
     config.vm.define vm_name = "core-%02d" % i do |config|
       config.vm.hostname = vm_name
 
-      ip = "172.17.8.#{i+100}"
+      ip = "#{IP_CNET}.#{IP_BASE+i*IP_INCR}"
+
       config.vm.network :private_network, ip: ip
 
       # Uncomment below to enable NFS for sharing the host machine into the coreos-vagrant VM.
