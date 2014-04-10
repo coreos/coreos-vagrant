@@ -10,6 +10,8 @@ CONFIG= "config.rb"
 # Defaults for config options defined in CONFIG
 $num_instances = [ Dir[".vagrant/machines/*"].count, 1 ].max
 $enable_serial_logging = false
+$core_folder = nil
+$host_folder = nil
 
 $ip_cnet = "172.17.8"
 $ip_base = 100
@@ -27,6 +29,8 @@ end
 if File.exist?(CONFIG)
 	require_relative CONFIG
 end
+
+CLOUD_CONFIG_PATH = "./user-data"
 
 Vagrant.configure("2") do |config|
   config.vm.box = "coreos-alpha"
