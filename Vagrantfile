@@ -3,7 +3,14 @@
 
 require_relative 'override-plugin.rb'
 
-NUM_INSTANCES = (ENV['NUM_INSTANCES'].to_i > 0 && ENV['NUM_INSTANCES'].to_i) || 1
+NUM_INSTANCES = (ENV['NUM_INSTANCES'].to_i > 0 && ENV['NUM_INSTANCES'].to_i) || [ Dir[".vagrant/machines/*"].count, 1 ].max
+
+IP_CNET = ENV['IP_CNET'] || "172.17.8"
+IP_BASE = (ENV['IP_BASE'].to_i > 0 && ENV['IP_BASE'].to_i) || 100
+IP_INCR = (ENV['IP_INCR'].to_i > 0 && ENV['IP_INCR'].to_i) || 1
+
+CORE_FOLDER = ENV['CORE_FOLDER']
+HOST_FOLDER = ENV['HOST_FOLDER']
 
 CLOUD_CONFIG_PATH = "./user-data"
 
@@ -30,11 +37,13 @@ Vagrant.configure("2") do |config|
     config.vm.define vm_name = "core-%02d" % i do |config|
       config.vm.hostname = vm_name
 
-      ip = "172.17.8.#{i+100}"
+      ip = "#{IP_CNET}.#{IP_BASE+i*IP_INCR}"
+
       config.vm.network :private_network, ip: ip
 
-      # Uncomment below to enable NFS for sharing the host machine into the coreos-vagrant VM.
-      #config.vm.synced_folder ".", "/home/core/share", id: "core", :nfs => true, :mount_options => ['nolock,vers=3,udp']
+      if CORE_FOLDER != nil and HOST_FOLDER != nil then
+        config.vm.synced_folder "#{HOST_FOLDER}", "#{CORE_FOLDER}", id: "core", :nfs => true, :mount_options => ['nolock,vers=3,udp']
+      end
 
       if File.exist?(CLOUD_CONFIG_PATH)
         config.vm.provision :file, :source => "#{CLOUD_CONFIG_PATH}", :destination => "/tmp/vagrantfile-user-data"
