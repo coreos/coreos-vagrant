@@ -5,6 +5,7 @@
 # after the equals sign..
 
 # Size of the CoreOS cluster created by Vagrant
+# defaults to the number of machines stored in .vagrant/machines
 #$num_instances=1
 
 # Log the serial consoles of CoreOS VMs to log/
