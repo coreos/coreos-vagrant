@@ -3,7 +3,7 @@
 
 require_relative 'override-plugin.rb'
 
-NUM_INSTANCES = (ENV['NUM_INSTANCES'].to_i > 0 && ENV['NUM_INSTANCES'].to_i) || 1
+NUM_INSTANCES = (ENV['NUM_INSTANCES'].to_i > 0 && ENV['NUM_INSTANCES'].to_i) || Dir[".vagrant/machines/*"].count
 
 IP_CNET = ENV['IP_CNET'] || "172.17.8"
 IP_BASE = (ENV['IP_BASE'].to_i > 0 && ENV['IP_BASE'].to_i) || 100
