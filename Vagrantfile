@@ -4,18 +4,29 @@
 require 'fileutils'
 require_relative 'override-plugin.rb'
 
-NUM_INSTANCES = (ENV['NUM_INSTANCES'].to_i > 0 && ENV['NUM_INSTANCES'].to_i) || [ Dir[".vagrant/machines/*"].count, 1 ].max
-
-IP_CNET = ENV['IP_CNET'] || "172.17.8"
-IP_BASE = (ENV['IP_BASE'].to_i > 0 && ENV['IP_BASE'].to_i) || 100
-IP_INCR = (ENV['IP_INCR'].to_i > 0 && ENV['IP_INCR'].to_i) || 1
-
-CORE_FOLDER = ENV['CORE_FOLDER']
-HOST_FOLDER = ENV['HOST_FOLDER']
-
-SERIAL = false
-
 CLOUD_CONFIG_PATH = "./user-data"
+CONFIG= "config.rb"
+
+# Defaults for config options defined in CONFIG
+$num_instances = [ Dir[".vagrant/machines/*"].count, 1 ].max
+$enable_serial_logging = false
+
+$ip_cnet = "172.17.8"
+$ip_base = 100
+$ip_incr = 1
+
+$core_folder = nil
+$host_folder = nil
+
+# Attempt to apply the deprecated environment variable NUM_INSTANCES to
+# $num_instances while allowing config.rb to override it
+if ENV["NUM_INSTANCES"].to_i > 0 && ENV["NUM_INSTANCES"]
+  $num_instances = ENV["NUM_INSTANCES"].to_i
+end
+
+if File.exist?(CONFIG)
+	require_relative CONFIG
+end
 
 Vagrant.configure("2") do |config|
   config.vm.box = "coreos-alpha"
@@ -36,11 +47,11 @@ Vagrant.configure("2") do |config|
     config.vbguest.auto_update = false
   end
 
-  (1..NUM_INSTANCES).each do |i|
+  (1..$num_instances).each do |i|
     config.vm.define vm_name = "core-%02d" % i do |config|
       config.vm.hostname = vm_name
 
-      if SERIAL then
+      if $enable_serial_logging
         logdir = File.join(File.dirname(__FILE__), "log")
         FileUtils.mkdir_p(logdir)
 
@@ -60,12 +71,12 @@ Vagrant.configure("2") do |config|
         end
       end
 
-      ip = "#{IP_CNET}.#{IP_BASE+i*IP_INCR}"
+      ip = "#{$ip_cnet}.#{i*$ip_incr+$ip_base}"
 
       config.vm.network :private_network, ip: ip
 
-      if CORE_FOLDER != nil and HOST_FOLDER != nil then
-        config.vm.synced_folder "#{HOST_FOLDER}", "#{CORE_FOLDER}", id: "core", :nfs => true, :mount_options => ['nolock,vers=3,udp']
+      if $core_folder != nil and $host_folder != nil then
+        config.vm.synced_folder "#{$host_folder}", "#{$core_folder}", id: "core", :nfs => true, :mount_options => ['nolock,vers=3,udp']
       end
 
       if File.exist?(CLOUD_CONFIG_PATH)
