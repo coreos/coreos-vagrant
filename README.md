@@ -74,10 +74,14 @@ Check out the [coreos-cloudinit documentation][coreos-cloudinit] to learn about 
 
 [coreos-cloudinit]: https://github.com/coreos/coreos-cloudinit
 
+#### Configuration
+
+The Vagrantfile will parse a `config.rb` file containing a set of options used to configure your CoreOS cluster.
+See `config.rb.sample` for more information.
+
 ## Cluster Setup
 
-Launching a CoreOS cluster on Vagrant is as simple as setting a `NUM_INSTANCES` environment variable to 3 (or more!), and running `vagrant up`.
-If running more than 1 instance, the `NUM_INSTANCES` value must always be set for `vagrant ssh` to function properly.
+Launching a CoreOS cluster on Vagrant is as simple as configuring `$num_instances` in a `config.rb` file to 3 (or more!) and running `vagrant up`.
 Make sure you provide a fresh discovery URL in your `user-data` if you wish to bootstrap etcd in your cluster.
 
 ## New Box Versions
