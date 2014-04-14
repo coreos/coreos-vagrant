@@ -4,6 +4,7 @@
 require_relative 'override-plugin.rb'
 
 NUM_INSTANCES = (ENV['NUM_INSTANCES'].to_i > 0 && ENV['NUM_INSTANCES'].to_i) || 1
+SERIAL = true
 
 CLOUD_CONFIG_PATH = "./user-data"
 
@@ -29,6 +30,31 @@ Vagrant.configure("2") do |config|
   (1..NUM_INSTANCES).each do |i|
     config.vm.define vm_name = "core-%02d" % i do |config|
       config.vm.hostname = vm_name
+
+      if SERIAL then
+        system("mkdir -p ./log/")
+        if !$?.success?
+          abort("Failed creating log directory")
+        end
+
+        serialFile = "./log/" + vm_name + "-serial.txt"
+        system("touch %s" % serialFile)
+        if !$?.success?
+          abort("Failed preparing log file")
+        end
+
+        config.vm.provider :vmware_fusion do |v, override|
+          v.vmx["serial0.present"] = "TRUE"
+          v.vmx["serial0.fileType"] = "file"
+          v.vmx["serial0.fileName"] = serialFile
+          v.vmx["serial0.tryNoRxLoss"] = "FALSE"
+        end
+
+        config.vm.provider :virtualbox do |vb, override|
+          vb.customize ["modifyvm", :id, "--uart1", "0x3F8", "4"]
+          vb.customize ["modifyvm", :id, "--uartmode1", serialFile]
+        end
+      end
 
       ip = "172.17.8.#{i+100}"
       config.vm.network :private_network, ip: ip
