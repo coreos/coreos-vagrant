@@ -1,6 +1,7 @@
 # -*- mode: ruby -*-
 # # vi: set ft=ruby :
 
+require 'fileutils'
 require_relative 'override-plugin.rb'
 
 NUM_INSTANCES = (ENV['NUM_INSTANCES'].to_i > 0 && ENV['NUM_INSTANCES'].to_i) || 1
@@ -33,17 +34,10 @@ Vagrant.configure("2") do |config|
 
       if SERIAL then
         logdir = File.join(File.dirname(__FILE__), "log")
-
-        system("mkdir -p %s" % logdir)
-        if !$?.success?
-          abort("Failed creating log directory")
-        end
+        FileUtils.mkdir_p(logdir)
 
         serialFile = File.join(logdir, "%s-serial.txt" % vm_name)
-        system("touch %s" % serialFile)
-        if !$?.success?
-          abort("Failed preparing log file")
-        end
+        FileUtils.touch(serialFile)
 
         config.vm.provider :vmware_fusion do |v, override|
           v.vmx["serial0.present"] = "TRUE"
