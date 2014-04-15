@@ -32,12 +32,14 @@ Vagrant.configure("2") do |config|
       config.vm.hostname = vm_name
 
       if SERIAL then
-        system("mkdir -p ./log/")
+        logdir = File.join(File.dirname(__FILE__), "log")
+
+        system("mkdir -p %s" % logdir)
         if !$?.success?
           abort("Failed creating log directory")
         end
 
-        serialFile = "./log/" + vm_name + "-serial.txt"
+        serialFile = File.join(logdir, "%s-serial.txt" % vm_name)
         system("touch %s" % serialFile)
         if !$?.success?
           abort("Failed preparing log file")
