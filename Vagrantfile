@@ -4,10 +4,22 @@
 require 'fileutils'
 require_relative 'override-plugin.rb'
 
-NUM_INSTANCES = (ENV['NUM_INSTANCES'].to_i > 0 && ENV['NUM_INSTANCES'].to_i) || 1
-SERIAL = false
-
 CLOUD_CONFIG_PATH = "./user-data"
+CONFIG= "config.rb"
+
+# Defaults for config options defined in CONFIG
+$num_instances = 1
+$enable_serial_logging = false
+
+# Attempt to apply the deprecated environment variable NUM_INSTANCES to
+# $num_instances while allowing config.rb to override it
+if ENV["NUM_INSTANCES"].to_i > 0 && ENV["NUM_INSTANCES"]
+  $num_instances = ENV["NUM_INSTANCES"].to_i
+end
+
+if File.exist?(CONFIG)
+	require_relative CONFIG
+end
 
 Vagrant.configure("2") do |config|
   config.vm.box = "coreos-alpha"
@@ -28,11 +40,11 @@ Vagrant.configure("2") do |config|
     config.vbguest.auto_update = false
   end
 
-  (1..NUM_INSTANCES).each do |i|
+  (1..$num_instances).each do |i|
     config.vm.define vm_name = "core-%02d" % i do |config|
       config.vm.hostname = vm_name
 
-      if SERIAL then
+      if $enable_serial_logging
         logdir = File.join(File.dirname(__FILE__), "log")
         FileUtils.mkdir_p(logdir)
 
