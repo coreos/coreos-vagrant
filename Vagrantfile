@@ -13,7 +13,7 @@ IP_INCR = (ENV['IP_INCR'].to_i > 0 && ENV['IP_INCR'].to_i) || 1
 CORE_FOLDER = ENV['CORE_FOLDER']
 HOST_FOLDER = ENV['HOST_FOLDER']
 
-SERIAL = true
+SERIAL = false
 
 CLOUD_CONFIG_PATH = "./user-data"
 
