@@ -5,7 +5,7 @@ require 'fileutils'
 require_relative 'override-plugin.rb'
 
 NUM_INSTANCES = (ENV['NUM_INSTANCES'].to_i > 0 && ENV['NUM_INSTANCES'].to_i) || 1
-SERIAL = true
+SERIAL = false
 
 CLOUD_CONFIG_PATH = "./user-data"
 
