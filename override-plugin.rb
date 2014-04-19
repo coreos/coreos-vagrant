@@ -95,12 +95,11 @@ hostname: #{machine.name}
 EOF
 
             temp = Tempfile.new("coreos-vagrant")
+            temp.binmode
             temp.write(cfg)
             temp.close
 
             comm.upload(temp.path, "/tmp/user-data")
-            comm.sudo("tr -d '\r' < /tmp/user-data > /tmp/user-data2")
-            comm.sudo("mv -f /tmp/user-data2 /tmp/user-data")
             comm.sudo("mkdir -p /var/lib/coreos-vagrant")
             comm.sudo("mv /tmp/user-data /var/lib/coreos-vagrant/")
 
