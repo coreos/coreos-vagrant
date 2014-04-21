@@ -10,8 +10,6 @@ CONFIG= "config.rb"
 # Defaults for config options defined in CONFIG
 $num_instances = [ Dir[".vagrant/machines/*"].count, 1 ].max
 $enable_serial_logging = false
-$core_folder = nil
-$host_folder = nil
 
 $ip_cnet = "172.17.8"
 $ip_base = 100

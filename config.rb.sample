@@ -11,3 +11,13 @@
 # Log the serial consoles of CoreOS VMs to log/
 # Enable by setting value to true, disable with false
 #$enable_serial_logging=false
+
+# IP address configuration
+#$ip_cnet = "172.17.8"
+#$ip_base = 100
+#$ip_incr = 1
+
+# shared folder configuration
+#$core_folder = nil
+#$host_folder = nil
+
