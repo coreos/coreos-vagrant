@@ -18,6 +18,8 @@ $ip_incr = 1
 $core_folder = nil
 $host_folder = nil
 
+$name_base = "core"
+
 # Attempt to apply the deprecated environment variable NUM_INSTANCES to
 # $num_instances while allowing config.rb to override it
 if ENV["NUM_INSTANCES"].to_i > 0 && ENV["NUM_INSTANCES"]
@@ -48,7 +50,7 @@ Vagrant.configure("2") do |config|
   end
 
   (1..$num_instances).each do |i|
-    config.vm.define vm_name = "core-%02d" % i do |config|
+    config.vm.define vm_name = "#{$name_base}-%02d" % i do |config|
       config.vm.hostname = vm_name
 
       if $enable_serial_logging

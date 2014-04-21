@@ -20,3 +20,6 @@
 # Shared folder configuration
 #$host_folder=nil
 #$core_folder=nil
+
+# Machine name configuration
+#$name_base="core"
