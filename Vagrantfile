@@ -10,9 +10,10 @@ CONFIG= "config.rb"
 # Defaults for config options defined in CONFIG
 $num_instances = 1
 $enable_serial_logging = false
-$ip_cnet="172.17.8"
-$ip_base=100
-$ip_incr=1
+
+$ip_cnet = "172.17.8"
+$ip_base = 100
+$ip_incr = 1
 
 # Attempt to apply the deprecated environment variable NUM_INSTANCES to
 # $num_instances while allowing config.rb to override it
