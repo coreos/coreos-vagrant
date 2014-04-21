@@ -15,6 +15,9 @@ $ip_cnet = "172.17.8"
 $ip_base = 100
 $ip_incr = 1
 
+$core_folder = nil
+$host_folder = nil
+
 # Attempt to apply the deprecated environment variable NUM_INSTANCES to
 # $num_instances while allowing config.rb to override it
 if ENV["NUM_INSTANCES"].to_i > 0 && ENV["NUM_INSTANCES"]
@@ -72,8 +75,9 @@ Vagrant.configure("2") do |config|
 
       config.vm.network :private_network, ip: ip
 
-      # Uncomment below to enable NFS for sharing the host machine into the coreos-vagrant VM.
-      #config.vm.synced_folder ".", "/home/core/share", id: "core", :nfs => true, :mount_options => ['nolock,vers=3,udp']
+      if $core_folder != nil and $host_folder != nil then
+        config.vm.synced_folder "#{$host_folder}", "#{$core_folder}", id: "core", :nfs => true, :mount_options => ['nolock,vers=3,udp']
+      end
 
       if File.exist?(CLOUD_CONFIG_PATH)
         config.vm.provision :file, :source => "#{CLOUD_CONFIG_PATH}", :destination => "/tmp/vagrantfile-user-data"

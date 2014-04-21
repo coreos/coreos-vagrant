@@ -16,3 +16,6 @@
 #$ip_base=100
 #$ip_incr=1
 
+# Shared folder configuration
+#host_folder=nil
+#core_folder=nil
