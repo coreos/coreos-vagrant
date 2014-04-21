@@ -10,6 +10,9 @@ CONFIG= "config.rb"
 # Defaults for config options defined in CONFIG
 $num_instances = 1
 $enable_serial_logging = false
+$ip_cnet="172.17.8"
+$ip_base=100
+$ip_incr=1
 
 # Attempt to apply the deprecated environment variable NUM_INSTANCES to
 # $num_instances while allowing config.rb to override it
@@ -64,7 +67,8 @@ Vagrant.configure("2") do |config|
         end
       end
 
-      ip = "172.17.8.#{i+100}"
+      ip = "#{$ip_cnet}.#{i*$ip_incr+$ip_base}"
+
       config.vm.network :private_network, ip: ip
 
       # Uncomment below to enable NFS for sharing the host machine into the coreos-vagrant VM.
