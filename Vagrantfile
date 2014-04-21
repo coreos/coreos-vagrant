@@ -69,7 +69,8 @@ Vagrant.configure("2") do |config|
 
       config.vm.provider :virtualbox do |vb|
         vb.gui = $vb_gui
-        vb.customize ["modifyvm", :id, "--memory", $vb_memory, "--cpus", $vb_cpus]
+        vb.memory = $vb_memory
+        vb.cpus = $vb_cpus
       end
 
       ip = "172.17.8.#{i+100}"
