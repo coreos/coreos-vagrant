@@ -5,6 +5,7 @@
 # after the equals sign..
 
 # Size of the CoreOS cluster created by Vagrant
+# Defaults to the number of machines created in the .vagrant/machines directory.
 #$num_instances=1
 
 # Log the serial consoles of CoreOS VMs to log/
@@ -17,5 +18,5 @@
 #$ip_incr=1
 
 # Shared folder configuration
-#host_folder=nil
-#core_folder=nil
+#$host_folder=nil
+#$core_folder=nil
