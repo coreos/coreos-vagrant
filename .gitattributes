@@ -1,0 +1,5 @@
+# Detect text files automatically
+* text=auto
+
+# Force Unix-style line endings on these files
+user-data* text eol=lf

@@ -95,6 +95,7 @@ hostname: #{machine.name}
 EOF
 
             temp = Tempfile.new("coreos-vagrant")
+            temp.binmode
             temp.write(cfg)
             temp.close
 
