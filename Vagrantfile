@@ -14,9 +14,6 @@ $enable_serial_logging = false
 $ip_cnet = "172.17.8"
 $ip_base = 100
 
-$core_folder = nil
-$host_folder = nil
-
 $cluster_name = "core"
 
 # Attempt to apply the deprecated environment variable NUM_INSTANCES to
