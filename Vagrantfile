@@ -13,7 +13,6 @@ $enable_serial_logging = false
 
 $ip_cnet = "172.17.8"
 $ip_base = 100
-$ip_incr = 1
 
 $core_folder = nil
 $host_folder = nil
@@ -73,7 +72,7 @@ Vagrant.configure("2") do |config|
         end
       end
 
-      ip = "#{$ip_cnet}.#{i*$ip_incr+$ip_base}"
+      ip = "#{$ip_cnet}.#{$ip_base+i}"
 
       config.vm.network :private_network, ip: ip
 

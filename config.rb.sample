@@ -15,7 +15,6 @@
 # IP address configuration
 #$ip_cnet="172.17.8"
 #$ip_base=100
-#$ip_incr=1
 
 # Shared folder configuration
 #$host_folder=nil
