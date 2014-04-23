@@ -8,7 +8,7 @@ CLOUD_CONFIG_PATH = "./user-data"
 CONFIG= "config.rb"
 
 # Defaults for config options defined in CONFIG
-$num_instances = [ Dir[".vagrant/machines/*"].count, 1 ].max
+$num_instances = 1
 $enable_serial_logging = false
 
 $ip_cnet = "172.17.8"
