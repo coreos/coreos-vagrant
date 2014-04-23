@@ -17,7 +17,7 @@ $ip_base = 100
 $core_folder = nil
 $host_folder = nil
 
-$name_base = "core"
+$cluster_name = "core"
 
 # Attempt to apply the deprecated environment variable NUM_INSTANCES to
 # $num_instances while allowing config.rb to override it
@@ -49,7 +49,7 @@ Vagrant.configure("2") do |config|
   end
 
   (1..$num_instances).each do |i|
-    config.vm.define vm_name = "#{$name_base}-%02d" % i do |config|
+    config.vm.define vm_name = "#{$cluster_name}-%02d" % i do |config|
       config.vm.hostname = vm_name
 
       if $enable_serial_logging

@@ -16,4 +16,4 @@
 #$ip_base=100
 
 # Machine name configuration
-#$name_base="core"
+#$cluster_name="core"
