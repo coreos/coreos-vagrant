@@ -2,6 +2,7 @@
 # # vi: set ft=ruby :
 
 require 'fileutils'
+require 'netaddr'
 require_relative 'override-plugin.rb'
 
 CLOUD_CONFIG_PATH = "./user-data"
@@ -11,7 +12,7 @@ CONFIG= "config.rb"
 $num_instances = 1
 $enable_serial_logging = false
 
-$ip_cnet = "172.17.8"
+$ip_addr = "172.17.8.0/24"
 $ip_base = 100
 
 $cluster_name = "core"
@@ -45,6 +46,8 @@ Vagrant.configure("2") do |config|
     config.vbguest.auto_update = false
   end
 
+  $ip_cidr = NetAddr::CIDR.create($ip_addr)
+
   (1..$num_instances).each do |i|
     config.vm.define vm_name = "#{$cluster_name}-%02d" % i do |config|
       config.vm.hostname = vm_name
@@ -69,7 +72,7 @@ Vagrant.configure("2") do |config|
         end
       end
 
-      ip = "#{$ip_cnet}.#{$ip_base+i}"
+      ip = $ip_cidr[$ip_base+i].ip
 
       config.vm.network :private_network, ip: ip
 

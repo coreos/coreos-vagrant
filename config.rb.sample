@@ -12,7 +12,7 @@
 #$enable_serial_logging=false
 
 # IP address configuration
-#$ip_cnet="172.17.8"
+#$ip_addr="172.17.8.0/24"
 #$ip_base=100
 
 # Machine name configuration
