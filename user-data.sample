@@ -5,7 +5,7 @@ coreos:
       #generate a new token for each unique cluster from https://discovery.etcd.io/new
       #discovery: https://discovery.etcd.io/<token>
       addr: $public_ipv4:4001
-      peer-addr: $public_ipv4:7001
+      peer-addr: $private_ipv4:7001
   units:
     - name: etcd.service
       command: start
