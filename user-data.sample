@@ -19,3 +19,17 @@ coreos:
         [Service]
         Environment=FLEET_PUBLIC_IP=$public_ipv4
         ExecStart=/usr/bin/fleet
+    - name: docker-tcp.socket
+      command: start
+      enable: true
+      content: |
+        [Unit]
+        Description=Docker Socket for the API
+
+        [Socket]
+        ListenStream=4243
+        Service=docker.service
+        BindIPv6Only=both
+
+        [Install]
+        WantedBy=sockets.target
