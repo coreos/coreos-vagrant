@@ -2,7 +2,6 @@
 # # vi: set ft=ruby :
 
 require 'fileutils'
-require_relative 'override-plugin.rb'
 
 CLOUD_CONFIG_PATH = "./user-data"
 CONFIG= "config.rb"
