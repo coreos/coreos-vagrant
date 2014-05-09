@@ -8,6 +8,7 @@ CONFIG= "config.rb"
 
 # Defaults for config options defined in CONFIG
 $num_instances = 1
+$update_channel = "alpha"
 $enable_serial_logging = false
 $vb_gui = false
 $vb_memory = 1024
@@ -24,12 +25,12 @@ if File.exist?(CONFIG)
 end
 
 Vagrant.configure("2") do |config|
-  config.vm.box = "coreos-alpha"
+  config.vm.box = "coreos-%s" % $update_channel
   config.vm.box_version = ">= 308.0.1"
-  config.vm.box_url = "http://storage.core-os.net/coreos/amd64-usr/alpha/coreos_production_vagrant.json"
+  config.vm.box_url = "http://%s.release.core-os.net/amd64-usr/current/coreos_production_vagrant.json" % $update_channel
 
   config.vm.provider :vmware_fusion do |vb, override|
-    override.vm.box_url = "http://storage.core-os.net/coreos/amd64-usr/alpha/coreos_production_vagrant_vmware_fusion.json"
+    override.vm.box_url = "http://%s.release.core-os.net/amd64-usr/current/coreos_production_vagrant_vmware_fusion.json" % $update_channel
   end
 
   # plugin conflict
