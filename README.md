@@ -94,3 +94,13 @@ Simply remove the old box file and vagrant will download the latest one the next
 vagrant box remove coreos --provider vmware_fusion
 vagrant box remove coreos --provider virtualbox
 ```
+
+## Docker Forwarding
+
+By setting the `$expose_docker_tcp` configuration value you can forward a local TCP port to docker on
+each CoreOS machine that you launch. The first machine will be available on the port that you specify
+and each additional machine will increment the port by 1.
+
+You can then use the `docker` command from your local shell by setting `DOCKER_HOST`:
+
+    export DOCKER_HOST=tcp://localhost:4243
