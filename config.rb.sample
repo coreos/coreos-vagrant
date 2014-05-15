@@ -9,6 +9,8 @@
 
 # Log the serial consoles of CoreOS VMs to log/
 # Enable by setting value to true, disable with false
+# WARNING: Serial logging is known to result in extremely high CPU usage with
+# VirtualBox, so should only be used in debugging situations
 #$enable_serial_logging=false
 
 # Enable port forwarding of Docker TCP socket
