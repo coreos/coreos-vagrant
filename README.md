@@ -7,8 +7,8 @@ After setup is complete you will have a single CoreOS virtual machine running on
 
 1) Install dependencies
 
-* [Virtualbox][virtualbox] 4.0 or greater.
-* [Vagrant][vagrant] 1.5 or greater.
+* [Virtualbox][virtualbox] 4.3.10 or greater.
+* [Vagrant][vagrant] 1.6 or greater.
 
 2) Clone this project and get it running!
 
