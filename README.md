@@ -20,7 +20,7 @@ cd coreos-vagrant
 3) Startup and SSH
 
 There are two "providers" for Virtualbox with slightly different instructions.
-Follow one of the folowing two options:
+Follow one of the following two options:
 
 **Virtualbox Provider**
 
