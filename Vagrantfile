@@ -21,7 +21,7 @@ if ENV["NUM_INSTANCES"].to_i > 0 && ENV["NUM_INSTANCES"]
 end
 
 if File.exist?(CONFIG)
-	require_relative CONFIG
+  require_relative CONFIG
 end
 
 Vagrant.configure("2") do |config|
