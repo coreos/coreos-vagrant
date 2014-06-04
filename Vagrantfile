@@ -73,6 +73,10 @@ Vagrant.configure("2") do |config|
         config.vm.network "forwarded_port", guest: 4243, host: ($expose_docker_tcp + i - 1), auto_correct: true
       end
 
+      config.vm.provider :vmware_fusion do |vb|
+        vb.gui = $vb_gui
+      end
+
       config.vm.provider :virtualbox do |vb|
         vb.gui = $vb_gui
         vb.memory = $vb_memory
