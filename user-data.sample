@@ -1,5 +1,11 @@
 #cloud-config
 
+# Note: Defining the ssh_authorized_keys section via userdata
+# will override the default Vagrant key defined in the oem-vagrant overlay
+# and quite likely break things
+#
+# https://github.com/coreos/coreos-overlay/blob/master/coreos-base/oem-vagrant/files/cloud-config.yml
+
 coreos:
   etcd:
       #generate a new token for each unique cluster from https://discovery.etcd.io/new
