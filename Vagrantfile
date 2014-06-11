@@ -3,8 +3,8 @@
 
 require 'fileutils'
 
-CLOUD_CONFIG_PATH = "./user-data"
-CONFIG= "config.rb"
+CLOUD_CONFIG_PATH = File.join(File.dirname(__FILE__), "user-data")
+CONFIG = File.join(File.dirname(__FILE__), "config.rb")
 
 # Defaults for config options defined in CONFIG
 $num_instances = 1
@@ -21,7 +21,7 @@ if ENV["NUM_INSTANCES"].to_i > 0 && ENV["NUM_INSTANCES"]
 end
 
 if File.exist?(CONFIG)
-  require_relative CONFIG
+  require CONFIG
 end
 
 Vagrant.configure("2") do |config|
