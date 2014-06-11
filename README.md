@@ -103,4 +103,4 @@ and each additional machine will increment the port by 1.
 
 You can then use the `docker` command from your local shell by setting `DOCKER_HOST`:
 
-    export DOCKER_HOST=tcp://localhost:4243
+    export DOCKER_HOST=tcp://localhost:2375
