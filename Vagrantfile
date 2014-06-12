@@ -3,6 +3,7 @@
 
 require 'fileutils'
 
+DOCKER_CONFIG = ENV['HOME']+'/.dockercfg'
 CLOUD_CONFIG_PATH = File.join(File.dirname(__FILE__), "user-data")
 CONFIG = File.join(File.dirname(__FILE__), "config.rb")
 
@@ -92,6 +93,12 @@ Vagrant.configure("2") do |config|
       if File.exist?(CLOUD_CONFIG_PATH)
         config.vm.provision :file, :source => "#{CLOUD_CONFIG_PATH}", :destination => "/tmp/vagrantfile-user-data"
         config.vm.provision :shell, :inline => "mv /tmp/vagrantfile-user-data /var/lib/coreos-vagrant/", :privileged => true
+      end
+
+      if File.exist?(DOCKER_CONFIG)
+        config.vm.provision :file, :source => "#{DOCKER_CONFIG}", :destination => "/tmp/dockercfg"
+        config.vm.provision :shell, :inline => "mv /tmp/dockercfg /root/.dockercfg; chown root.root /root/.dockercfg; chmod 600 /root/.dockercfg", :privileged => true
+        config.vm.provision :shell, :inline => "cp /root/.dockercfg /home/core/.dockercfg; chown core.core /home/core/.dockercfg; chmod 600 /root/.dockercfg", :privileged => true
       end
 
     end
