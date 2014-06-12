@@ -74,7 +74,6 @@ Vagrant.configure("2") do |config|
       end
 
       config.vm.provider :vmware_fusion do |vb|
-        vb.functional_hgfs = false
         vb.gui = $vb_gui
       end
 
