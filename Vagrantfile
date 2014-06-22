@@ -3,6 +3,13 @@
 
 require 'fileutils'
 
+begin
+  unless VagrantPlugins::ProviderVirtualBox::Driver::Meta.new.version >= "4.3.10"
+    puts 'WARNING: If you are using the VirtualBox provider, please note that ersion 4.3.10 or greater is required.'
+  end
+rescue Vagrant::Errors::VirtualBoxNotDetected
+end
+
 CLOUD_CONFIG_PATH = File.join(File.dirname(__FILE__), "user-data")
 CONFIG = File.join(File.dirname(__FILE__), "config.rb")
 
