@@ -53,7 +53,7 @@ vagrant ssh
 ``vagrant ssh`` connects you to the virtual machine.
 Configuration is stored in the directory so you can always return to this machine by executing vagrant ssh from the directory where the Vagrantfile was located.
 
-3) Get started [using CoreOS][using-coreos]
+4) Get started [using CoreOS][using-coreos]
 
 [virtualbox]: https://www.virtualbox.org/
 [vagrant]: http://downloads.vagrantup.com/
