@@ -82,6 +82,8 @@ Vagrant.configure("2") do |config|
       ["vmware_fusion", "vmware_workstation"].each do |vmware|
         config.vm.provider vmware do |v|
           v.gui = $vb_gui
+          v.vmx["memsize"] = $vb_memory
+          v.vmx["numvcpus"] = $vb_cpus
         end
       end
 
