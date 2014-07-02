@@ -36,8 +36,15 @@ vagrant ssh
 The VMware provider is a commercial addon from Hashicorp that offers better stability and speed.
 If you use this provider follow these instructions.
 
+VMware Fusion:
 ```
 vagrant up --provider vmware_fusion
+vagrant ssh
+```
+
+VMware Workstation:
+```
+vagrant up --provider vmware_workstation
 vagrant ssh
 ```
 
@@ -92,6 +99,7 @@ Simply remove the old box file and vagrant will download the latest one the next
 
 ```
 vagrant box remove coreos --provider vmware_fusion
+vagrant box remove coreos --provider vmware_workstation
 vagrant box remove coreos --provider virtualbox
 ```
 
