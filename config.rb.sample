@@ -4,8 +4,17 @@
 # uncomment the necessary lines, leaving the $, and replace everything
 # after the equals sign..
 
-# Size of the CoreOS cluster created by Vagrant
+# Option 1: Size of the CoreOS cluster created by Vagrant
 #$num_instances=1
+
+# Option 2: VM names to create
+$vm_names = []
+#$vm_names << "first"
+#$vm_names << "second"
+#...
+
+# VM name prefix
+#$vm_name_prefix=""
 
 # Official CoreOS channel from which updates should be downloaded
 #$update_channel='alpha'
