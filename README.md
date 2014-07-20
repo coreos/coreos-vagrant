@@ -49,7 +49,7 @@ Configuration is stored in the directory so you can always return to this machin
 3) Get started [using CoreOS][using-coreos]
 
 [virtualbox]: https://www.virtualbox.org/
-[vagrant]: http://downloads.vagrantup.com/
+[vagrant]: https://www.vagrantup.com/downloads.html
 [using-coreos]: http://coreos.com/docs/using-coreos/
 
 #### Shared Folder Setup
