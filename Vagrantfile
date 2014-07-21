@@ -17,6 +17,7 @@ $share_home = false
 $vm_gui = false
 $vm_memory = 1024
 $vm_cpus = 1
+$vm_cpuexecutioncap = 100
 $shared_folders = {}
 
 # Attempt to apply the deprecated environment variable NUM_INSTANCES to
@@ -110,6 +111,7 @@ Vagrant.configure("2") do |config|
         vb.gui = vm_gui
         vb.memory = vm_memory
         vb.cpus = vm_cpus
+        vb.customize ["modifyvm", :id, "--cpuexecutioncap", "#{$vb_cpuexecutioncap}"]
       end
 
       ip = "172.17.8.#{i+100}"
