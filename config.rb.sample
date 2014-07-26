@@ -43,6 +43,11 @@ $new_discovery_url='https://discovery.etcd.io/new'
 #   export DOCKER_HOST='tcp://127.0.0.1:2375'
 #$expose_docker_tcp=2375
 
+# Enable NFS sharing of your home directory ($HOME) to CoreOS
+# It will be mounted at the same path in the VM as on the host.
+# Example: /Users/foobar -> /Users/foobar
+#$share_home=false
+
 # Setting for VirtualBox VMs
 #$vb_gui = false
 #$vb_memory = 1024
