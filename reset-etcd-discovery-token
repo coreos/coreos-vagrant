@@ -11,11 +11,11 @@ function checkToken {
   cat $TARGET | grep --color=never discovery: | sed 's/\s*discovery: //'
 }
 
-echo -ne "Before:"
+echo -n "Before:"
 checkToken
 
 ESCAPED_TOKEN=$(curl --silent https://discovery.etcd.io/new | sed 's/\//\\\//g')
 sed -i '' "s/discovery:.*/discovery: ${ESCAPED_TOKEN}/" $TARGET
 
-echo -ne " After:"
+echo -n " After:"
 checkToken
