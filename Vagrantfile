@@ -98,4 +98,13 @@ Vagrant.configure("2") do |config|
 
     end
   end
+
+  # Uncomment below to automatically reset the etcd discovery token when destroying the VM
+  # token_reset = false
+  # config.trigger.after :destroy do
+  #   unless token_reset
+  #     run "./reset-etcd-discovery-token"
+  #     token_reset = true
+  #   end
+  # end
 end
