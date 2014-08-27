@@ -2,7 +2,7 @@
 # To automatically replace the discovery token on 'vagrant up', uncomment
 # the lines below:
 #
-#if File.exists? 'user-data'
+#if File.exists?('user-data') && ARGV[0].eql?('up')
 #  require 'open-uri'
 #  require 'yaml'
 # 
