@@ -29,6 +29,9 @@
 # Size of the CoreOS cluster created by Vagrant
 #$num_instances=1
 
+# Change basename of the VM
+#$instance_name_prefix="projectx-coreos"
+
 # Official CoreOS channel from which updates should be downloaded
 #$update_channel='alpha'
 
