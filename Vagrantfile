@@ -10,6 +10,7 @@ CONFIG = File.join(File.dirname(__FILE__), "config.rb")
 
 # Defaults for config options defined in CONFIG
 $num_instances = 1
+$instance_name_prefix = "core"
 $update_channel = "alpha"
 $enable_serial_logging = false
 $share_home = false
@@ -67,7 +68,7 @@ Vagrant.configure("2") do |config|
   end
 
   (1..$num_instances).each do |i|
-    config.vm.define vm_name = "core-%02d" % i do |config|
+    config.vm.define vm_name = "%s-%02d" % [$instance_name_prefix, i] do |config|
       config.vm.hostname = vm_name
 
       if $enable_serial_logging
