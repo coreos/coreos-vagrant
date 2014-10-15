@@ -1,3 +1,4 @@
+$new_discovery_url='https://discovery.etcd.io/new'
 
 # To automatically replace the discovery token on 'vagrant up', uncomment
 # the lines below:
@@ -6,7 +7,7 @@
 #  require 'open-uri'
 #  require 'yaml'
 # 
-#  token = open('https://discovery.etcd.io/new').read
+#  token = open($new_discovery_url).read
 # 
 #  data = YAML.load(IO.readlines('user-data')[1..-1].join)
 #  data['coreos']['etcd']['discovery'] = token
