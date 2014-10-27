@@ -18,6 +18,7 @@ $vm_gui = false
 $vm_memory = 1024
 $vm_cpus = 1
 $shared_folders = {}
+$forwarded_ports = {}
 
 # Attempt to apply the deprecated environment variable NUM_INSTANCES to
 # $num_instances while allowing config.rb to override it
@@ -96,6 +97,10 @@ Vagrant.configure("2") do |config|
 
       if $expose_docker_tcp
         config.vm.network "forwarded_port", guest: 2375, host: ($expose_docker_tcp + i - 1), auto_correct: true
+      end
+
+      $forwarded_ports.each do |guest, host|
+	config.vm.network "forwarded_port", guest: guest, host: host, auto_correct: true
       end
 
       ["vmware_fusion", "vmware_workstation"].each do |vmware|
