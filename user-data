@@ -1,0 +1,35 @@
+#cloud-config
+
+write_files:
+  - path: /etc/containers.env
+    permissions: 0644
+    owner: root
+    content: |
+      PREFETCH="busybox:latest base/devel:minimal"
+
+coreos:
+  update:
+    group: alpha
+    reboot-strategy: off
+  units:
+    - name: etcd.service
+      enable: false
+    - name: fleet.service
+      enable: false
+    - name: prefetch-container-images.service
+      command: start
+      enable: true
+      content: |
+        [Unit]
+        After=network-online.target
+        After=docker.service
+        Description=Install BusyBox
+        Documentation=http://zettio.github.io/weave/
+        Requires=network-online.target
+        Requires=docker.service
+
+        [Service]
+        EnvironmentFile=/etc/containers.env
+        Type=oneshot
+        RemainAfterExit=yes
+        ExecStart=/bin/sh -c 'for c in $PREFETCH; do /usr/bin/docker pull $c; done'
