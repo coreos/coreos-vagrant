@@ -57,11 +57,15 @@ Vagrant.configure("2") do |config|
     private_ip = IPAddr.new private_ip
   end
 
+  dhcp = $dhcp
   public_ip = $public_ip
-  if public_ip
+  if public_ip == "dhcp"
+    public_ip = false
+    dhcp = true
+  else
     public_ip = IPAddr.new public_ip
   end
-    
+
   (1..$num_instances).each do |i|
     config.vm.define vm_name = "core-%02d" % i do |config|
       config.vm.hostname = vm_name
@@ -119,6 +123,7 @@ Vagrant.configure("2") do |config|
           config.vm.network :public_network, bridge: $bridge
         else
           config.vm.network :public_network
+        end
       end
 
       # Uncomment below to enable NFS for sharing the host machine into the coreos-vagrant VM.
@@ -127,6 +132,8 @@ Vagrant.configure("2") do |config|
       if File.exist?(CLOUD_CONFIG_PATH)
         config.vm.provision :file, :source => "#{CLOUD_CONFIG_PATH}", :destination => "/tmp/vagrantfile-user-data"
         config.vm.provision :shell, :inline => "mv /tmp/vagrantfile-user-data /var/lib/coreos-vagrant/", :privileged => true
+        config.vm.provision :shell, :inline => "mkdir -p /var/lib/coreos-install", :privileged => true
+        config.vm.provision :shell, :inline => "cd /var/lib/coreos-install && ln -s /var/lib/coreos-vagrant/vagrantfile-user-data user_data", :privileged => true
       end
 
     end
