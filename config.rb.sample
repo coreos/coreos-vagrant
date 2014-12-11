@@ -51,3 +51,4 @@
 #$private_ip = "172.17.8.100"
 #$public_ip = false
 #$bridge = false
+#$dhcp = false

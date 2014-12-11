@@ -11,8 +11,7 @@ CONFIG = File.join(File.dirname(__FILE__), "config.rb")
 
 # Defaults for config options defined in CONFIG
 $num_instances = 1
-$update_channel = "stable
-"
+$update_channel = "stable"
 $enable_serial_logging = false
 $vb_gui = false
 $vb_memory = 1024
@@ -20,6 +19,7 @@ $vb_cpus = 1
 $private_ip = "172.17.8.100"
 $public_ip = false
 $bridge = false
+$dhcp = false
 
 # Attempt to apply the deprecated environment variable NUM_INSTANCES to
 # $num_instances while allowing config.rb to override it
@@ -106,11 +106,19 @@ Vagrant.configure("2") do |config|
       end
       
       if public_ip
-        config.vm.network :public_network, ip: public_ip.to_s
         public_ip.succ
         if $bridge
-          config.vm.network :public_network, bridge: $bridge
+          config.vm.network :public_network, ip: public_ip.to_s, bridge: $bridge
+        else
+          config.vm.network :public_network, ip: public_ip.to_s
         end
+      end
+
+      if $dhcp
+        if $bridge
+          config.vm.network :public_network, bridge: $bridge
+        else
+          config.vm.network :public_network
       end
 
       # Uncomment below to enable NFS for sharing the host machine into the coreos-vagrant VM.
