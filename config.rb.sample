@@ -27,7 +27,7 @@
 #$num_instances=1
 
 # Official CoreOS channel from which updates should be downloaded
-#$update_channel='alpha'
+#$update_channel='stable'
 
 # Log the serial consoles of CoreOS VMs to log/
 # Enable by setting value to true, disable with false
@@ -46,3 +46,8 @@
 #$vb_gui = false
 #$vb_memory = 1024
 #$vb_cpus = 1
+
+# Setting for IP addresses
+#$private_ip = "172.17.8.100"
+#$public_ip = false
+#$bridge = false
