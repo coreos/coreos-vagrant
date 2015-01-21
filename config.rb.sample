@@ -48,7 +48,7 @@ $new_discovery_url='https://discovery.etcd.io/new'
 # Example: /Users/foobar -> /Users/foobar
 #$share_home=false
 
-# Setting for VirtualBox VMs
-#$vb_gui = false
-#$vb_memory = 1024
-#$vb_cpus = 1
+# Customize VMs
+#$vm_gui = false
+#$vm_memory = 1024
+#$vm_cpus = 1

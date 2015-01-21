@@ -13,9 +13,9 @@ $num_instances = 1
 $update_channel = "alpha"
 $enable_serial_logging = false
 $share_home = false
-$vb_gui = false
-$vb_memory = 1024
-$vb_cpus = 1
+$vm_gui = false
+$vm_memory = 1024
+$vm_cpus = 1
 
 # Attempt to apply the deprecated environment variable NUM_INSTANCES to
 # $num_instances while allowing config.rb to override it
@@ -25,6 +25,19 @@ end
 
 if File.exist?(CONFIG)
   require CONFIG
+end
+
+# Use old vb_xxx config variables when set
+def vm_gui
+  $vb_gui.nil? ? $vm_gui : $vb_gui
+end
+
+def vm_memory
+  $vb_memory.nil? ? $vm_memory : $vb_memory
+end
+
+def vm_cpus
+  $vb_cpus.nil? ? $vm_cpus : $vb_cpus
 end
 
 Vagrant.configure("2") do |config|
@@ -85,16 +98,16 @@ Vagrant.configure("2") do |config|
 
       ["vmware_fusion", "vmware_workstation"].each do |vmware|
         config.vm.provider vmware do |v|
-          v.gui = $vb_gui
-          v.vmx["memsize"] = $vb_memory
-          v.vmx["numvcpus"] = $vb_cpus
+          v.gui = vm_gui
+          v.vmx['memsize'] = vm_memory
+          v.vmx['numvcpus'] = vm_cpus
         end
       end
 
       config.vm.provider :virtualbox do |vb|
-        vb.gui = $vb_gui
-        vb.memory = $vb_memory
-        vb.cpus = $vb_cpus
+        vb.gui = vm_gui
+        vb.memory = vm_memory
+        vb.cpus = vm_cpus
       end
 
       ip = "172.17.8.#{i+100}"
