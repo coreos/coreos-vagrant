@@ -12,6 +12,7 @@ CONFIG = File.join(File.dirname(__FILE__), "config.rb")
 $num_instances = 1
 $update_channel = "alpha"
 $enable_serial_logging = false
+$share_home = false
 $vb_gui = false
 $vb_memory = 1024
 $vb_cpus = 1
@@ -101,6 +102,10 @@ Vagrant.configure("2") do |config|
 
       # Uncomment below to enable NFS for sharing the host machine into the coreos-vagrant VM.
       #config.vm.synced_folder ".", "/home/core/share", id: "core", :nfs => true, :mount_options => ['nolock,vers=3,udp']
+
+      if $share_home
+        config.vm.synced_folder ENV['HOME'], ENV['HOME'], id: "home", :nfs => true, :mount_options => ['nolock,vers=3,udp']
+      end
 
       if File.exist?(CLOUD_CONFIG_PATH)
         config.vm.provision :file, :source => "#{CLOUD_CONFIG_PATH}", :destination => "/tmp/vagrantfile-user-data"
