@@ -27,6 +27,11 @@ $new_discovery_url='https://discovery.etcd.io/new'
 # Size of the CoreOS cluster created by Vagrant
 #$num_instances=1
 
+# Change basename of the VM
+# The default value is "core", which results in VMs named starting with
+# "core-01" through to "core-${num_instances}".
+#$instance_name_prefix="core"
+
 # Official CoreOS channel from which updates should be downloaded
 #$update_channel='alpha'
 
