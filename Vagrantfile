@@ -17,6 +17,8 @@ $share_home = false
 $vm_gui = false
 $vm_memory = 1024
 $vm_cpus = 1
+$auto_discovery=false
+$new_discovery_url='https://discovery.etcd.io/new'
 
 # Attempt to apply the deprecated environment variable NUM_INSTANCES to
 # $num_instances while allowing config.rb to override it
@@ -26,6 +28,19 @@ end
 
 if File.exist?(CONFIG)
   require CONFIG
+end
+
+if $auto_discovery.eql?(true) && File.exists?('user-data') && ARGV[0].eql?('up')
+  require 'open-uri'
+  require 'yaml'
+
+  token = open($new_discovery_url).read
+
+  data = YAML.load(IO.readlines('user-data')[1..-1].join)
+  data['coreos']['etcd']['discovery'] = token
+
+  yaml = YAML.dump(data)
+  File.open('user-data', 'w') { |file| file.write("#cloud-config\n\n#{yaml}") }
 end
 
 # Use old vb_xxx config variables when set
