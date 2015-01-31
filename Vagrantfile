@@ -17,6 +17,8 @@ $share_home = false
 $vm_gui = false
 $vm_memory = 1024
 $vm_cpus = 1
+$cache_docker_images=false
+$loop_device_size = '10G'
 $auto_discovery=false
 $new_discovery_url='https://discovery.etcd.io/new'
 
@@ -131,6 +133,21 @@ Vagrant.configure("2") do |config|
 
       if $share_home
         config.vm.synced_folder ENV['HOME'], ENV['HOME'], id: "home", :nfs => true, :mount_options => ['nolock,vers=3,udp']
+      end
+
+      if $cache_docker_images
+        config.vm.synced_folder 'shared', '/shared', id: 'shared', nfs: true, create: true,
+          mount_options: ['nolock'], linux__nfs_options: [ 'rw', 'no_subtree_check', 'no_root_squash']
+
+        config.vm.provision :shell, privileged: true,
+          path: 'scripts/docker-device.sh',
+          args: [ '/shared/var-lib-docker.img', $docker_device_size ]
+      end
+
+      if defined? $docker_images
+        config.vm.provision "docker" do |d|
+          $docker_images.each { |img| d.pull_images img; }
+        end
       end
 
       if File.exist?(CLOUD_CONFIG_PATH)

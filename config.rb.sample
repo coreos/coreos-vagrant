@@ -41,6 +41,25 @@
 # Example: /Users/foobar -> /Users/foobar
 #$share_home=false
 
+# Enable caching of the vm docker directory to allow for persistent
+# installation of docker images. This avoids having to redownload images
+# while testing your cloud-init setup
+#$cache_docker_images=false
+
+# Configure the size of the device to mount as the vm docker directory
+# The filesystem used for docker, btrfs, is known to fail when disk space
+# is running low. If you are getting Error: "No space left on device" (ENOSPC)
+# try increasing the size of the device.
+# [See documentation for coreutils 'dd' command for information on valid sizes]
+#$docker_device_size = '10G'
+
+# Provide a list of docker images to install on the vm before loading user-data.
+# This will allow for cleaner journal logs while testing since all necesary
+# images are already present before starting any tasks.
+#$docker_images = [
+#  "ubuntu:12.04"
+#]
+
 # Customize VMs
 #$vm_gui = false
 #$vm_memory = 1024
