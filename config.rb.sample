@@ -57,3 +57,6 @@ $new_discovery_url='https://discovery.etcd.io/new'
 #$vm_gui = false
 #$vm_memory = 1024
 #$vm_cpus = 1
+
+# Enable port forwarding from guest to host machine, syntax is: { guestPort1 => hostPort1, ... }, auto correction is enabled by default.
+#$forwarded_ports = { 80 => 8080 }
