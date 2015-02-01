@@ -17,6 +17,10 @@ $share_home = false
 $vm_gui = false
 $vm_memory = 1024
 $vm_cpus = 1
+$cache_docker_images=false
+$loop_device_size = '10G'
+$auto_discovery=false
+$new_discovery_url='https://discovery.etcd.io/new'
 
 # Attempt to apply the deprecated environment variable NUM_INSTANCES to
 # $num_instances while allowing config.rb to override it
@@ -26,6 +30,19 @@ end
 
 if File.exist?(CONFIG)
   require CONFIG
+end
+
+if $auto_discovery.eql?(true) && File.exists?('user-data') && ARGV[0].eql?('up')
+  require 'open-uri'
+  require 'yaml'
+
+  token = open($new_discovery_url).read
+
+  data = YAML.load(IO.readlines('user-data')[1..-1].join)
+  data['coreos']['etcd']['discovery'] = token
+
+  yaml = YAML.dump(data)
+  File.open('user-data', 'w') { |file| file.write("#cloud-config\n\n#{yaml}") }
 end
 
 # Use old vb_xxx config variables when set
@@ -114,11 +131,23 @@ Vagrant.configure("2") do |config|
       ip = "172.17.8.#{i+100}"
       config.vm.network :private_network, ip: ip
 
-      # Uncomment below to enable NFS for sharing the host machine into the coreos-vagrant VM.
-      #config.vm.synced_folder ".", "/home/core/share", id: "core", :nfs => true, :mount_options => ['nolock,vers=3,udp']
-
       if $share_home
         config.vm.synced_folder ENV['HOME'], ENV['HOME'], id: "home", :nfs => true, :mount_options => ['nolock,vers=3,udp']
+      end
+
+      if $cache_docker_images
+        config.vm.synced_folder 'shared', '/shared', id: 'shared', nfs: true, create: true,
+          mount_options: ['nolock'], linux__nfs_options: [ 'rw', 'no_subtree_check', 'no_root_squash']
+
+        config.vm.provision :shell, privileged: true,
+          path: 'scripts/docker-device.sh',
+          args: [ '/shared/var-lib-docker.img', $docker_device_size ]
+      end
+
+      if defined? $docker_images
+        config.vm.provision "docker" do |d|
+          $docker_images.each { |img| d.pull_images img; }
+        end
       end
 
       if File.exist?(CLOUD_CONFIG_PATH)

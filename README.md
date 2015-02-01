@@ -71,6 +71,14 @@ config.vm.synced_folder ".", "/home/core/share", id: "core", :nfs => true,  :mou
 
 After a 'vagrant reload' you will be prompted for your local machine password.
 
+#### Docker Images 
+
+The Vagrantfile will provision your CoreOS VM(s) with a list of docker images from dockerhub before loading your user-data. These are configurable in your `config.rb` file.
+
+#### Docker Image Cache
+
+To avoid redownloading docker images each time your CoreOS VM(s) are built the Vagrantfile offers the ability to mount the docker directory (/var/lib/docker) as a loop device which is reused each time you run `vagrant up`. To enable this set the `$cache_docker_images` variable to true in `config.rb`
+
 #### Provisioning with user-data
 
 The Vagrantfile will provision your CoreOS VM(s) with [coreos-cloudinit][coreos-cloudinit] if a `user-data` file is found in the project directory.

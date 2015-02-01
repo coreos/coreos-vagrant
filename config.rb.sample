@@ -1,28 +1,16 @@
-$new_discovery_url='https://discovery.etcd.io/new'
-
-# To automatically replace the discovery token on 'vagrant up', uncomment
-# the lines below:
-#
-#if File.exists?('user-data') && ARGV[0].eql?('up')
-#  require 'open-uri'
-#  require 'yaml'
-# 
-#  token = open($new_discovery_url).read
-# 
-#  data = YAML.load(IO.readlines('user-data')[1..-1].join)
-#  data['coreos']['etcd']['discovery'] = token
-# 
-#  yaml = YAML.dump(data)
-#  File.open('user-data', 'w') { |file| file.write("#cloud-config\n\n#{yaml}") }
-#end
-#
-
-#
 # coreos-vagrant is configured through a series of configuration
 # options (global ruby variables) which are detailed below. To modify
 # these options, first copy this file to "config.rb". Then simply
 # uncomment the necessary lines, leaving the $, and replace everything
 # after the equals sign..
+
+# If you'd like to use a discovery url other than the one provided by CoreOS
+# Set it here:
+#$new_discovery_url='https://discovery.etcd.io/new'
+
+# To automatically replace the discovery token on 'vagrant up', set this
+# to true:
+#$auto_discovery=false
 
 # Size of the CoreOS cluster created by Vagrant
 #$num_instances=1
@@ -52,6 +40,25 @@ $new_discovery_url='https://discovery.etcd.io/new'
 # It will be mounted at the same path in the VM as on the host.
 # Example: /Users/foobar -> /Users/foobar
 #$share_home=false
+
+# Enable caching of the vm docker directory to allow for persistent
+# installation of docker images. This avoids having to redownload images
+# while testing your cloud-init setup
+#$cache_docker_images=false
+
+# Configure the size of the device to mount as the vm docker directory
+# The filesystem used for docker, btrfs, is known to fail when disk space
+# is running low. If you are getting Error: "No space left on device" (ENOSPC)
+# try increasing the size of the device.
+# [See documentation for coreutils 'dd' command for information on valid sizes]
+#$docker_device_size = '10G'
+
+# Provide a list of docker images to install on the vm before loading user-data.
+# This will allow for cleaner journal logs while testing since all necesary
+# images are already present before starting any tasks.
+#$docker_images = [
+#  "ubuntu:12.04"
+#]
 
 # Customize VMs
 #$vm_gui = false
