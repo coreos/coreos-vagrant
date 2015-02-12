@@ -17,6 +17,7 @@ $share_home = false
 $vm_gui = false
 $vm_memory = 1024
 $vm_cpus = 1
+$nfs_enable = true
 
 # Attempt to apply the deprecated environment variable NUM_INSTANCES to
 # $num_instances while allowing config.rb to override it
@@ -42,6 +43,9 @@ def vm_cpus
 end
 
 Vagrant.configure("2") do |config|
+  # Do we want Vagrant to consider NFS as an option?
+  config.nfs.functional = $enable_nfs
+
   # always use Vagrants insecure key
   config.ssh.insert_key = false
 

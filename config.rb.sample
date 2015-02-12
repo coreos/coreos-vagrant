@@ -57,3 +57,7 @@ $new_discovery_url='https://discovery.etcd.io/new'
 #$vm_gui = false
 #$vm_memory = 1024
 #$vm_cpus = 1
+
+# Allow Vagrant to use NFS for shared folders (default).
+# Set to false to force Vagrant to fall back to a different approach.
+#$enable_nfs = true
