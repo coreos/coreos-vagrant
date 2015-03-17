@@ -9,6 +9,8 @@ coreos:
     peer-addr: $public_ipv4:7001
   fleet:
     public-ip: $public_ipv4
+  flannel:
+    interface: $public_ipv4
   units:
     - name: etcd.service
       command: start
