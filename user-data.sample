@@ -14,8 +14,10 @@ coreos:
   units:
     - name: etcd.service
       command: start
+      after: docker.service
     - name: fleet.service
       command: start
+      after: etcd.service
     - name: docker-tcp.socket
       command: start
       enable: true
