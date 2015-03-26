@@ -6,12 +6,12 @@ $new_discovery_url='https://discovery.etcd.io/new'
 #if File.exists?('user-data') && ARGV[0].eql?('up')
 #  require 'open-uri'
 #  require 'yaml'
-# 
+#
 #  token = open($new_discovery_url).read
-# 
+#
 #  data = YAML.load(IO.readlines('user-data')[1..-1].join)
 #  data['coreos']['etcd']['discovery'] = token
-# 
+#
 #  yaml = YAML.dump(data)
 #  File.open('user-data', 'w') { |file| file.write("#cloud-config\n\n#{yaml}") }
 #end
@@ -47,6 +47,11 @@ $new_discovery_url='https://discovery.etcd.io/new'
 # You can then use the docker tool locally by setting the following env var:
 #   export DOCKER_HOST='tcp://127.0.0.1:2375'
 #$expose_docker_tcp=2375
+
+# Enable port forwarding for Fleet TCP socket. Set this to true, then use fleetctl
+# locally by setting the following env var:
+#   export FLEETCTL_ENDPOINT='tcp://127.0.0.1:4001'
+#$expose_fleet_tcp=4001
 
 # Enable NFS sharing of your home directory ($HOME) to CoreOS
 # It will be mounted at the same path in the VM as on the host.
