@@ -11,7 +11,7 @@ CONFIG = File.join(File.dirname(__FILE__), "config.rb")
 # Defaults for config options defined in CONFIG
 $num_instances = 1
 $instance_name_prefix = "core"
-$update_channel = "alpha"
+$update_channel = ENV["COREOS_CHANNEL"] || "stable"
 $enable_serial_logging = false
 $share_home = false
 $vm_gui = false
@@ -48,7 +48,7 @@ Vagrant.configure("2") do |config|
   config.ssh.insert_key = false
 
   config.vm.box = "coreos-%s" % $update_channel
-  config.vm.box_version = ">= 308.0.1"
+  config.vm.box_version = ">= 633.1.0"
   config.vm.box_url = "http://%s.release.core-os.net/amd64-usr/current/coreos_production_vagrant.json" % $update_channel
 
   ["vmware_fusion", "vmware_workstation"].each do |vmware|
@@ -100,7 +100,7 @@ Vagrant.configure("2") do |config|
       end
 
       $forwarded_ports.each do |guest, host|
-	config.vm.network "forwarded_port", guest: guest, host: host, auto_correct: true
+        config.vm.network "forwarded_port", guest: guest, host: host, auto_correct: true
       end
 
       ["vmware_fusion", "vmware_workstation"].each do |vmware|
