@@ -46,6 +46,9 @@ end
 Vagrant.configure("2") do |config|
   # always use Vagrants insecure key
   config.ssh.insert_key = false
+  
+  # forward agent for easier working with fleet
+  config.ssh.forward_agent = true
 
   config.vm.box = "coreos-%s" % $update_channel
   config.vm.box_version = ">= 308.0.1"
