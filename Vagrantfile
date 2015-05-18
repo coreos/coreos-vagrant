@@ -100,7 +100,7 @@ Vagrant.configure("2") do |config|
       end
 
       $forwarded_ports.each do |guest, host|
-	config.vm.network "forwarded_port", guest: guest, host: host, auto_correct: true
+        config.vm.network "forwarded_port", guest: guest, host: host, auto_correct: true
       end
 
       ["vmware_fusion", "vmware_workstation"].each do |vmware|
