@@ -3,6 +3,8 @@
 
 require 'fileutils'
 
+# Vagrantfile API/syntax version. Don't touch unless you know what you're doing!
+VAGRANTFILE_API_VERSION = "2"
 Vagrant.require_version ">= 1.6.0"
 
 CLOUD_CONFIG_PATH = File.join(File.dirname(__FILE__), "user-data")
@@ -26,8 +28,19 @@ if ENV["NUM_INSTANCES"].to_i > 0 && ENV["NUM_INSTANCES"]
   $num_instances = ENV["NUM_INSTANCES"].to_i
 end
 
+BASE_IP_ADDR = ENV['BASE_IP_ADDR'] || "172.17.8"
+
 if File.exist?(CONFIG)
   require CONFIG
+end
+
+# check either 'http_proxy' or 'HTTP_PROXY' environment variable
+$enable_proxy = !(ENV['HTTP_PROXY'] || ENV['http_proxy'] || '').empty?
+if $enable_proxy
+  required_plugins.push('vagrant-proxyconf')
+  HTTP_PROXY = ENV['HTTP_PROXY'] || ENV['http_proxy']
+  HTTPS_PROXY = ENV['HTTPS_PROXY'] || ENV['https_proxy']
+  NO_PROXY = ENV['NO_PROXY'] || ENV['no_proxy'] || "localhost"
 end
 
 # Use old vb_xxx config variables when set
@@ -43,7 +56,7 @@ def vm_cpus
   $vb_cpus.nil? ? $vm_cpus : $vb_cpus
 end
 
-Vagrant.configure("2") do |config|
+Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # always use Vagrants insecure key
   config.ssh.insert_key = false
 
@@ -57,6 +70,11 @@ Vagrant.configure("2") do |config|
     end
   end
 
+  config.vm.provider :parallels do |vb, override|
+    override.vm.box = "AntonioMeireles/coreos-#{CHANNEL}"
+    override.vm.box_url = "https://vagrantcloud.com/AntonioMeireles/coreos-#{CHANNEL}"
+  end
+
   config.vm.provider :virtualbox do |v|
     # On VirtualBox, we don't have guest additions or a functional vboxsf
     # in CoreOS, so tell Vagrant that so it can be smarter.
@@ -64,9 +82,29 @@ Vagrant.configure("2") do |config|
     v.functional_vboxsf     = false
   end
 
+  config.vm.provider :parallels do |p|
+    p.update_guest_tools = false
+    p.check_guest_tools = false
+  end
+
   # plugin conflict
   if Vagrant.has_plugin?("vagrant-vbguest") then
     config.vbguest.auto_update = false
+  end
+
+  # setup VM proxy to system proxy environment
+  if Vagrant.has_plugin?("vagrant-proxyconf") && enable_proxy
+    config.proxy.http = HTTP_PROXY
+    config.proxy.https = HTTPS_PROXY
+    # most http tools, like wget and curl do not undestand IP range
+    # thus adding each node one by one to no_proxy
+    (1..(NUM_INSTANCES.to_i + 1)).each do |i|
+      Object.redefine_const(:NO_PROXY, "#{NO_PROXY},#{BASE_IP_ADDR}.#{i+100}")
+    end
+    config.proxy.no_proxy = NO_PROXY
+    # proxyconf plugin use wrong approach to set Docker proxy for CoreOS
+    # force proxyconf to skip Docker proxy setup
+    config.proxy.enabled = { docker: false }
   end
 
   (1..$num_instances).each do |i|
@@ -93,6 +131,15 @@ Vagrant.configure("2") do |config|
           vb.customize ["modifyvm", :id, "--uart1", "0x3F8", "4"]
           vb.customize ["modifyvm", :id, "--uartmode1", serialFile]
         end
+
+        # supported since vagrant-parallels 1.3.7
+        # https://github.com/Parallels/vagrant-parallels/issues/164
+        config.vm.provider :parallels do |v|
+          v.customize("post-import",
+            ["set", :id, "--device-add", "serial", "--output", serialFile])
+          v.customize("pre-boot",
+            ["set", :id, "--device-set", "serial0", "--output", serialFile])
+        end
       end
 
       if $expose_docker_tcp
@@ -117,7 +164,7 @@ Vagrant.configure("2") do |config|
         vb.cpus = vm_cpus
       end
 
-      ip = "172.17.8.#{i+100}"
+      ip = "#{BASE_IP_ADDR}.#{i+100}"
       config.vm.network :private_network, ip: ip
 
       # Uncomment below to enable NFS for sharing the host machine into the coreos-vagrant VM.
@@ -132,6 +179,20 @@ Vagrant.configure("2") do |config|
 
       if File.exist?(CLOUD_CONFIG_PATH)
         config.vm.provision :file, :source => "#{CLOUD_CONFIG_PATH}", :destination => "/tmp/vagrantfile-user-data"
+        if $enable_proxy
+          config.vm.provision :shell, :privileged => true,
+          inline: <<-EOF
+            sed -i'*' "s|__PROXY_LINE__||g" /tmp/vagrantfile-user-data
+            sed -i'*' "s|__HTTP_PROXY__|#{HTTP_PROXY}|g" /tmp/vagrantfile-user-data
+            sed -i'*' "s|__HTTPS_PROXY__|#{HTTPS_PROXY}|g" /tmp/vagrantfile-user-data
+            sed -i'*' "s|__NO_PROXY__|#{NO_PROXY}|g" /tmp/vagrantfile-user-data
+          EOF
+        else
+          config.vm.provision :shell, :privileged => true,
+          inline: <<-EOF
+            sed -i'*'' "/__PROXY_LINE__/d" /tmp/vagrantfile-user-data
+          EOF
+        end
         config.vm.provision :shell, :inline => "mv /tmp/vagrantfile-user-data /var/lib/coreos-vagrant/", :privileged => true
       end
 
