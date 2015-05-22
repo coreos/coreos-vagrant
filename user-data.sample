@@ -1,5 +1,14 @@
 #cloud-config
 
+---
+write-files:
+  - __PROXY_LINE__path: /etc/systemd/system/docker.service.d/http-proxy.conf
+    __PROXY_LINE__owner: core:core
+    __PROXY_LINE__permissions: '0644'
+    __PROXY_LINE__content: |
+      __PROXY_LINE__[Service]
+      __PROXY_LINE__Environment="HTTP_PROXY=__HTTP_PROXY__" "HTTPS_PROXY=__HTTPS_PROXY__" "NO_PROXY=__NO_PROXY__"
+
 coreos:
   etcd:
     # generate a new token for each unique cluster from https://discovery.etcd.io/new
