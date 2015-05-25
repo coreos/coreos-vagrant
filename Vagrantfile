@@ -3,6 +3,13 @@
 
 require 'fileutils'
 
+class Module
+  def redefine_const(name, value)
+    __send__(:remove_const, name) if const_defined?(name)
+    const_set(name, value)
+  end
+end
+
 # Vagrantfile API/syntax version. Don't touch unless you know what you're doing!
 VAGRANTFILE_API_VERSION = "2"
 Vagrant.require_version ">= 1.6.0"
@@ -34,13 +41,24 @@ if File.exist?(CONFIG)
   require CONFIG
 end
 
+$required_plugins = %w(vagrant-triggers)
+
 # check either 'http_proxy' or 'HTTP_PROXY' environment variable
 $enable_proxy = !(ENV['HTTP_PROXY'] || ENV['http_proxy'] || '').empty?
 if $enable_proxy
-  required_plugins.push('vagrant-proxyconf')
+  $required_plugins.push('vagrant-proxyconf')
   HTTP_PROXY = ENV['HTTP_PROXY'] || ENV['http_proxy']
   HTTPS_PROXY = ENV['HTTPS_PROXY'] || ENV['https_proxy']
   NO_PROXY = ENV['NO_PROXY'] || ENV['no_proxy'] || "localhost"
+end
+
+$required_plugins.each do |plugin|
+  need_restart = false
+  unless Vagrant.has_plugin? plugin
+    system "vagrant plugin install #{plugin}"
+    need_restart = true
+  end
+  exec "vagrant #{ARGV.join(' ')}" if need_restart
 end
 
 # Use old vb_xxx config variables when set
@@ -70,21 +88,11 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     end
   end
 
-  config.vm.provider :parallels do |vb, override|
-    override.vm.box = "AntonioMeireles/coreos-#{CHANNEL}"
-    override.vm.box_url = "https://vagrantcloud.com/AntonioMeireles/coreos-#{CHANNEL}"
-  end
-
   config.vm.provider :virtualbox do |v|
     # On VirtualBox, we don't have guest additions or a functional vboxsf
     # in CoreOS, so tell Vagrant that so it can be smarter.
     v.check_guest_additions = false
     v.functional_vboxsf     = false
-  end
-
-  config.vm.provider :parallels do |p|
-    p.update_guest_tools = false
-    p.check_guest_tools = false
   end
 
   # plugin conflict
@@ -93,12 +101,12 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   end
 
   # setup VM proxy to system proxy environment
-  if Vagrant.has_plugin?("vagrant-proxyconf") && enable_proxy
+  if Vagrant.has_plugin?("vagrant-proxyconf") && $enable_proxy
     config.proxy.http = HTTP_PROXY
     config.proxy.https = HTTPS_PROXY
     # most http tools, like wget and curl do not undestand IP range
     # thus adding each node one by one to no_proxy
-    (1..(NUM_INSTANCES.to_i + 1)).each do |i|
+    (1..($num_instances + 1)).each do |i|
       Object.redefine_const(:NO_PROXY, "#{NO_PROXY},#{BASE_IP_ADDR}.#{i+100}")
     end
     config.proxy.no_proxy = NO_PROXY
@@ -130,15 +138,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         config.vm.provider :virtualbox do |vb, override|
           vb.customize ["modifyvm", :id, "--uart1", "0x3F8", "4"]
           vb.customize ["modifyvm", :id, "--uartmode1", serialFile]
-        end
-
-        # supported since vagrant-parallels 1.3.7
-        # https://github.com/Parallels/vagrant-parallels/issues/164
-        config.vm.provider :parallels do |v|
-          v.customize("post-import",
-            ["set", :id, "--device-add", "serial", "--output", serialFile])
-          v.customize("pre-boot",
-            ["set", :id, "--device-set", "serial0", "--output", serialFile])
         end
       end
 
@@ -182,15 +181,15 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         if $enable_proxy
           config.vm.provision :shell, :privileged => true,
           inline: <<-EOF
-            sed -i'*' "s|__PROXY_LINE__||g" /tmp/vagrantfile-user-data
-            sed -i'*' "s|__HTTP_PROXY__|#{HTTP_PROXY}|g" /tmp/vagrantfile-user-data
-            sed -i'*' "s|__HTTPS_PROXY__|#{HTTPS_PROXY}|g" /tmp/vagrantfile-user-data
-            sed -i'*' "s|__NO_PROXY__|#{NO_PROXY}|g" /tmp/vagrantfile-user-data
+          sed -i'*' "s|__PROXY_LINE__||g" /tmp/vagrantfile-user-data
+          sed -i'*' "s|__HTTP_PROXY__|#{HTTP_PROXY}|g" /tmp/vagrantfile-user-data
+          sed -i'*' "s|__HTTPS_PROXY__|#{HTTPS_PROXY}|g" /tmp/vagrantfile-user-data
+          sed -i'*' "s|__NO_PROXY__|#{NO_PROXY}|g" /tmp/vagrantfile-user-data
           EOF
         else
           config.vm.provision :shell, :privileged => true,
           inline: <<-EOF
-            sed -i'*'' "/__PROXY_LINE__/d" /tmp/vagrantfile-user-data
+          sed -i'*' "/__PROXY_LINE__/d" /tmp/vagrantfile-user-data
           EOF
         end
         config.vm.provision :shell, :inline => "mv /tmp/vagrantfile-user-data /var/lib/coreos-vagrant/", :privileged => true
