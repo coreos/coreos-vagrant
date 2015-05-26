@@ -56,6 +56,7 @@ coreos:
         [Unit]
         After=flanneld.service
         Requires=flanneld.service
+        [Service]
         Restart=always
         Restart=on-failure
   - name: docker-tcp.socket
