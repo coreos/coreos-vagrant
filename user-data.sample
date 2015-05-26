@@ -1,5 +1,13 @@
 #cloud-config
 
+---
+write-files:
+  - __PROXY_LINE__path: /etc/systemd/system/docker.service.d/http-proxy.conf
+    __PROXY_LINE__owner: core:core
+    __PROXY_LINE__permissions: '0644'
+    __PROXY_LINE__content: |
+      __PROXY_LINE__[Service]
+      __PROXY_LINE__Environment="HTTP_PROXY=__HTTP_PROXY__" "HTTPS_PROXY=__HTTPS_PROXY__" "NO_PROXY=__NO_PROXY__"
 coreos:
   etcd:
     # generate a new token for each unique cluster from https://discovery.etcd.io/new
@@ -17,30 +25,49 @@ coreos:
     # legacy ports can be omitted if your application doesn't depend on them
     listen-client-urls: http://0.0.0.0:2379,http://0.0.0.0:4001
     listen-peer-urls: http://$private_ipv4:2380,http://$private_ipv4:7001
+    __PROXY_LINE__discovery-proxy: __HTTP_PROXY__
   fleet:
     public-ip: $public_ipv4
   flannel:
     interface: $public_ipv4
   units:
-    - name: etcd.service
-      command: start
+  - name: flanneld.service
+    command: start
+    drop-ins:
+    - name: 50-network-config.conf
+      content: |
+        [Unit]
+        Requires=etcd2.service
+        [Service]
+        ExecStartPre=/usr/bin/etcdctl set /coreos.com/network/config '{ "Network": "10.1.0.0/16" }'
+  - name: etcd.service
+    command: start
     # To use etcd2, comment out the above service and uncomment these
     # Note: this requires a release that contains etcd2
     #- name: etcd2.service
     #  command: start
-    - name: fleet.service
-      command: start
-    - name: docker-tcp.socket
-      command: start
-      enable: true
+  - name: fleet.service
+    command: start
+  - name: docker.service
+    command: start
+    drop-ins:
+    - name: 60-docker-wait-for-flannel-config.conf
       content: |
         [Unit]
-        Description=Docker Socket for the API
-
-        [Socket]
-        ListenStream=2375
-        Service=docker.service
-        BindIPv6Only=both
-
-        [Install]
-        WantedBy=sockets.target
+        After=flanneld.service
+        Requires=flanneld.service
+        [Service]
+        Restart=always
+        Restart=on-failure
+  - name: docker-tcp.socket
+    command: start
+    enable: true
+    content: |
+      [Unit]
+      Description=Docker Socket for the API
+      [Socket]
+      ListenStream=2375
+      Service=docker.service
+      BindIPv6Only=both
+      [Install]
+      WantedBy=sockets.target
