@@ -38,7 +38,8 @@ $new_discovery_url="https://discovery.etcd.io/new?size=#{$num_instances}"
 # "core-01" through to "core-${num_instances}".
 #$instance_name_prefix="core"
 
-# Official CoreOS channel from which updates should be downloaded
+# Official CoreOS channel from which updates should be downloaded. Valid
+# values are 'alpha', 'beta' and 'stable'
 #$update_channel='alpha'
 
 # Log the serial consoles of CoreOS VMs to log/
