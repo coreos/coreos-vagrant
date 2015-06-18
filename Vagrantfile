@@ -100,6 +100,8 @@ Vagrant.configure("2") do |config|
 
       if $expose_docker_tcp
         config.vm.network "forwarded_port", guest: 2375, host: ($expose_docker_tcp + i - 1), auto_correct: true
+        config.vm.provision :file, :source => "docker-tcp.socket", :destination => "/tmp/docker-tcp.socket"
+        config.vm.provision :shell, :inline => "mv /tmp/docker-tcp.socket /etc/systemd/system; systemctl enable docker-tcp.socket; systemctl stop docker; systemctl start docker-tcp.socket; systemctl start docker", :privileged => true, :keep_color => true
       end
 
       $forwarded_ports.each do |guest, host|
