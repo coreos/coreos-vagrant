@@ -1,0 +1,15 @@
+sessionname coreos
+hardstatus alwayslastline '%{= .} %-Lw%{= .}%> %n%f %t*%{= .}%+Lw%< %-=%{g}(%{d}%H/%l%{g})'
+setenv PROMPT_COMMAND /usr/bin/true
+#setenv VAGRANT_COMMAND /usr/local/bin/vagrant
+screen -t shell bash
+
+screen -t core-01 bash
+stuff "vagrant ssh core-01"
+
+screen -t core-02 bash
+stuff "vagrant ssh core-02"
+
+screen -t core-03 bash
+stuff "vagrant ssh core-03"
+
