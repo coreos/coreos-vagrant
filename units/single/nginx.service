@@ -9,3 +9,6 @@ ExecStartPre=-/usr/bin/docker rm nginx
 ExecStartPre=/usr/bin/docker pull nginx:latest
 ExecStart=/usr/bin/docker run --name nginx -p 80:80 nginx
 ExecStop=/usr/bin/docker stop nginx
+
+[X-Fleet]
+Conflicts=redis-workbench@*.service

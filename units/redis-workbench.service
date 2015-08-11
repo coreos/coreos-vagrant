@@ -1,0 +1,28 @@
+[Unit]
+Description=Redis Workbench Service
+After=docker.service
+Requires=redis-db@%i.service
+
+[Service]
+TimeoutStartSec=0
+
+# Change killmode from "control-group" to "none" to let Docker remove
+# work correctly.
+KillMode=0
+
+# Get CoreOS environmental variables
+EnvironmentFile=/etc/environment
+
+ExecStartPre=-/usr/bin/docker kill redis-workbench.%i
+ExecStartPre=-/usr/bin/docker rm redis-workbench.%i
+ExecStartPre=/usr/bin/docker pull kcyeu/redis-workbench:latest
+#ExecStart=/usr/bin/docker run --name redis-workbench.%i -p 80:80 --link redis-db.%i:redis kcyeu/redis-workbench
+ExecStart=/usr/bin/docker run --name redis-workbench.%i --link redis-db.%i:redis kcyeu/redis-workbench
+
+# Stop
+ExecStop=/usr/bin/docker stop redis-workbench.%i
+
+[X-Fleet]
+MachineOf=redis-db@%i.service
+Conflicts=redis-workbench@*.service
+

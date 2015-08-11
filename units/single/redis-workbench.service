@@ -1,15 +1,16 @@
 [Unit]
 Description=Redis Workbench Service
 After=docker.service
-Requires=docker.service
 Requires=redis-db.service
 
 [Service]
+# Disable systemd's built-in time out
 TimeoutStartSec=0
 
 # Change killmode from "control-group" to "none" to let Docker remove
 # work correctly.
-KillMode=0
+# https://github.com/coreos/unit-examples/issues/1
+KillMode=none
 
 # Get CoreOS environmental variables
 EnvironmentFile=/etc/environment
@@ -23,4 +24,6 @@ ExecStart=/usr/bin/docker run --name redis-workbench -p 80:80 --link redis-db:re
 ExecStop=/usr/bin/docker stop redis-workbench
 
 [X-Fleet]
-X-ConditionMachineOf=redis-db.service
+MachineOf=redis-db.service
+Conflicts=redis-workbench@*.service
+

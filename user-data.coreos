@@ -3,7 +3,7 @@
 ---
 coreos:
   etcd2:
-    discovery: https://discovery.etcd.io/eef3eae7ade2fb42d743bb617068de99
+    discovery: https://discovery.etcd.io/536ce895ede896ac6c73522bcfde48f5
     advertise-client-urls: http://$public_ipv4:2379
     initial-advertise-peer-urls: http://$private_ipv4:2380
     listen-client-urls: http://0.0.0.0:2379,http://0.0.0.0:4001
@@ -13,6 +13,7 @@ coreos:
     metadata: region=tw-north
   flannel:
     interface: $public_ipv4
+    etcd_prefix: /coreos.com/network
   locksmith:
     endpoint: $private_ipv4:4001
   update:

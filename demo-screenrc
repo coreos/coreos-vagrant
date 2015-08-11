@@ -5,11 +5,11 @@ setenv PROMPT_COMMAND /usr/bin/true
 screen -t bash bash
 
 screen -t core-01 bash
-stuff "vagrant ssh core-01"
+stuff "ssh -A core@172.19.8.101"
 
 screen -t core-02 bash
-stuff "vagrant ssh core-02"
+stuff "ssh -A core@172.19.8.102"
 
 screen -t core-03 bash
-stuff "vagrant ssh core-03"
+stuff "ssh -A core@172.19.8.103"
 
