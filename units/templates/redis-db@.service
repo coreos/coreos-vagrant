@@ -15,6 +15,7 @@ ExecStartPre=-/usr/bin/docker kill redis-db.%i
 ExecStartPre=-/usr/bin/docker rm redis-db.%i
 ExecStartPre=/usr/bin/docker pull redis:latest
 ExecStart=/usr/bin/docker run --name redis-db.%i redis
+
 ExecStop=/usr/bin/docker stop redis-db.%i
 
 [X-Fleet]

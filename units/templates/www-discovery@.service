@@ -1,10 +1,12 @@
 [Unit]
 Description=Announce WWW on instance %i
 BindsTo=redis-workbench@%i.service
-After=etcd.service
-After=redis-workbench@%i.service
-Requires=etcd.service
+
+Requires=etcd2.service
 Requires=redis-workbench@%i.service
+
+After=etcd2.service
+After=redis-workbench@%i.service
 
 [Service]
 ExecStart=/bin/bash -a -c '\

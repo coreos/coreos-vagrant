@@ -1,7 +1,7 @@
 [Unit]
 Description=Redis Workbench Service
-After=docker.service
 Requires=redis-db@%i.service
+After=docker.service
 
 [Service]
 # Disable systemd's built-in time out

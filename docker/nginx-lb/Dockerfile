@@ -9,7 +9,7 @@ RUN apt-get -qq update && apt-get -qqy install \
 && apt-get clean \
 && rm -rf /var/lib/apt/lists/* \
 && mkdir -p /usr/local/bin \
-&& mkdir -p /etc/confd/{conf.d,templates} \
+&& mkdir -p /etc/confd/conf.d /etc/confd/templates \
 && rm /etc/nginx/conf.d/default.conf
 
 # add confd

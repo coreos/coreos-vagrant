@@ -1,5 +1,5 @@
 [Unit]
-Description=Nginx load balancer for web server backends
+Description=Nginx load balancer for Redis Workbench
 
 # Requirements
 Requires=etcd2.service
@@ -23,13 +23,5 @@ EnvironmentFile=/etc/environment
 ExecStartPre=-/usr/bin/docker kill redis-workbench-lb
 ExecStartPre=-/usr/bin/docker rm redis-workbench-lb
 ExecStartPre=/usr/bin/docker pull kcyeu/redis-workbench-lb
-ExecStart=/usr/bin/docker run --name redis-workbench-lb \
--p ${COREOS_PUBLIC_IPV4}:80:80 \
--e HOST_IP=${COREOS_PRIVATE_IPV4} \
+ExecStart=/usr/bin/docker run --name redis-workbench-lb -p ${COREOS_PUBLIC_IPV4}:80:80 \
 kcyeu/redis-workbench-lb /usr/local/bin/confd-watch
-
-# Stop
-ExecStop=/usr/bin/docker stop redis-workbench-lb
-
-[X-Fleet]
-Conflicts=redis-workbench@*.service
