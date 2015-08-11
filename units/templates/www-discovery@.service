@@ -9,6 +9,8 @@ After=etcd2.service
 After=redis-workbench@%i.service
 
 [Service]
+TimeoutStartSec=0
+
 ExecStart=/bin/bash -a -c '\
   while true; do \
     curl -f $(/usr/bin/docker inspect --format=\'{{.NetworkSettings.IPAddress}}\' redis-workbench.%i) > /dev/null 2>&1; \

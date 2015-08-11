@@ -1,14 +1,11 @@
 [Unit]
 Description=Redis Database Service
+Requires=docker.service
+
 After=docker.service
 
 [Service]
-# Disable systemd's built-in time out
 TimeoutStartSec=0
-
-# Change killmode from "control-group" to "none" to let Docker remove
-# work correctly.
-# https://github.com/coreos/unit-examples/issues/1
 KillMode=none
 
 ExecStartPre=-/usr/bin/docker kill redis-db.%i
@@ -20,4 +17,3 @@ ExecStop=/usr/bin/docker stop redis-db.%i
 
 [X-Fleet]
 Conflicts=redis-db@*.service
-
