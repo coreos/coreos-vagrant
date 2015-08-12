@@ -2,6 +2,8 @@
 
 set -eo pipefail
 
+# etcd2 use IANA-assigned port 2379 and 2380, but port 4001 and 7001 are
+# still available for compatibility
 export ETCD_PORT=${ETCD_PORT:-4001}
 export HOST_IP=${HOST_IP:-172.17.8.1}
 export ETCD=$HOST_IP:$ETCD_PORT
