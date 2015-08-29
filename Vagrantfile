@@ -123,7 +123,7 @@ Vagrant.configure("2") do |config|
 
       ip = "172.19.8.#{i+100}"
       config.vm.network :private_network, ip: ip
-      config.vm.network "public_network", bridge: "en0: Wi-Fi (AirPort)"
+      config.vm.network "public_network", bridge: "em1"
 
       # Uncomment below to enable NFS for sharing the host machine into the coreos-vagrant VM.
       #config.vm.synced_folder ".", "/home/core/share", id: "core", :nfs => true, :mount_options => ['nolock,vers=3,udp']

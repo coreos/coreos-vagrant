@@ -3,7 +3,7 @@
 ---
 coreos:
   etcd2:
-    discovery: https://discovery.etcd.io/34f15c9456f9e5a39ed6664a5e9f6aed
+    discovery: https://discovery.etcd.io/0d54809ae62a17b2cf9163b75a7f2316
     advertise-client-urls: http://$public_ipv4:2379
     initial-advertise-peer-urls: http://$private_ipv4:2380
     listen-client-urls: http://0.0.0.0:2379,http://0.0.0.0:4001
@@ -44,5 +44,3 @@ coreos:
 
       [Install]
       WantedBy=sockets.target
-ssh_authorized_keys:
-- ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC5JbddijN84NT3xe2PAVKNGrsn4Amijd4pDIha3C2jhMbVkkHYRhRfguXqUP0uMrhw0EHjaBMkCm3tCfO5np60ntoyuY+JeR+DJ+QD6w3qSEIPREEZ3Fio9oQ1gL5tvcBiY0eDtggI7v4qTSQkLtfGnHHZdkxtt5jSS3GmOPAe5/5KvY0CnIh3bhoIGbagsWutW7gqtar4wyqsBqy6JysUKGAh4QHiUWD40pW2yUThJR/19sPktNtZi2bc2cc9vh2Ec31HrZRdyeK+Dz4b6H68T95MR5OfrU04oYYVjU9cJBOZ/Yhpq+UY1sA7FhrLSYLkV0PirPiVX36ACM8qZN8R

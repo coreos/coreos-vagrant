@@ -1,5 +1,5 @@
 # Size of the CoreOS cluster created by Vagrant
-$num_instances=3
+$num_instances=1
 
 # Used to fetch a new discovery token for a cluster of size $num_instances
 $new_discovery_url="https://discovery.etcd.io/new?size=#{$num_instances}"
@@ -76,7 +76,7 @@ $update_channel='stable'
 
 # Customize VMs
 $vm_gui = false
-$vm_memory = 1280
+$vm_memory = 512
 $vm_cpus = 1
 
 # Share additional folders to the CoreOS VMs
@@ -85,7 +85,8 @@ $vm_cpus = 1
 # or, to map host folders to guest folders of the same name,
 # $shared_folders = Hash[*['/home/foo/app1', '/home/foo/app2'].map{|d| [d, d]}.flatten]
 #$shared_folders = {}
-$shared_folders = {'/Users/kcyeu/Desktop/git/coreos-vagrant' => '/home/core/vagrant'}
+#$shared_folders = {'/Users/kcyeu/Desktop/git/coreos-vagrant' => '/home/core/vagrant'}
+$shared_folders = {'/home/kcyeu/git/coreos-vagrant' => '/home/core/vagrant'}
 
 # Enable port forwarding from guest(s) to host machine, syntax is: { 80 => 8080 }, auto correction is enabled by default.
 #$forwarded_ports = {}
