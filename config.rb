@@ -76,7 +76,7 @@ $update_channel='stable'
 
 # Customize VMs
 $vm_gui = false
-$vm_memory = 512
+$vm_memory = 1280
 $vm_cpus = 1
 
 # Share additional folders to the CoreOS VMs
