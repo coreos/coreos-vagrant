@@ -22,10 +22,12 @@ $new_discovery_url="https://discovery.etcd.io/new?size=#{$num_instances}"
 #  end
 #
 #  # Fix for YAML.load() converting reboot-strategy from 'off' to `false`
-#  if data['coreos']['update'].key? 'reboot-strategy'
-#     if data['coreos']['update']['reboot-strategy'] == false
-#          data['coreos']['update']['reboot-strategy'] = 'off'
-#       end
+#  if data['coreos'].key? 'update'
+#     if data['coreos']['update'].key? 'reboot-strategy'
+#        if data['coreos']['update']['reboot-strategy'] == false
+#           data['coreos']['update']['reboot-strategy'] = 'off'
+#        end
+#     end
 #  end
 #
 #  yaml = YAML.dump(data)
