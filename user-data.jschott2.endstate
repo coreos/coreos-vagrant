@@ -1,0 +1,111 @@
+#cloud-config
+
+
+coreos:
+  
+  #etcd:
+    
+    # generate a new token for each unique cluster from https://discovery.etcd.io/new
+    
+    # WARNING: replace each time you 'vagrant destroy'
+    
+    #discovery: https://discovery.etcd.io/<token>
+
+    #addr: $public_ipv4:4001
+  
+    #peer-addr: $public_ipv4:7001
+
+  
+  etcd2:
+    
+    #generate a new token for each unique cluster from https://discovery.etcd.io/new
+    
+    #discovery: https://discovery.etcd.io/<token>
+    
+
+    discovery: https://discovery.etcd.io/cad301173cde933bec00f6c2f167a789
+
+    # multi-region and multi-cloud deployments need to use $public_ipv4
+
+    advertise-client-urls: http://$public_ipv4:2379
+
+    initial-advertise-peer-urls: http://$private_ipv4:2380
+
+
+    # listen on both the official ports and the legacy ports
+    
+    # legacy ports can be omitted if your application doesn't depend on them
+
+    listen-client-urls: http://0.0.0.0:2379,http://0.0.0.0:4001
+
+    listen-peer-urls: http://$private_ipv4:2380,http://$private_ipv4:7001
+
+    - name: rpc-statd.service
+      command: start
+      enable: true
+    - name: mnt-data.mount
+      command: start
+      content: |
+        [Mount]
+        What=jwsii-pc:/vol2/data
+        Where=/mnt/data
+        Type=nfs
+
+  fleet:
+
+    public-ip: $public_ipv4
+
+
+  flannel:
+
+    interface: $public_ipv4
+
+
+  units:
+
+    ############## etcd is depreciated #########################
+    #- name: etcd.service
+
+    #  command: start
+    
+    ############################################################
+
+    # To use etcd2, comment out the above service and uncomment these
+    
+    # Note: this requires a release that contains etcd2
+    
+    - name: etcd2.service
+    
+      command: start
+
+    - name: fleet.service
+
+      command: start
+
+    - name: docker-tcp.socket
+
+      command: start
+
+      enable: true
+
+      content: |
+
+        [Unit]
+
+        Description=Docker Socket for the API
+
+
+
+        [Socket]
+
+        ListenStream=2375
+
+        Service=docker.service
+
+        BindIPv6Only=both
+
+
+
+        [Install]
+
+        WantedBy=sockets.target
