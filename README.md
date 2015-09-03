@@ -9,10 +9,10 @@ After setup is complete you will have a single CoreOS virtual machine running on
 
 * [VirtualBox][virtualbox] 4.3.10 or greater.
 * [Vagrant][vagrant] 1.6 or greater.
-* ([GitHub][GitHub Desktop])
-* ([PuTTY][PuTTY]) 0.64 or greater.
-* ([Cygwin][cwgwin]) 
-* ([apple][bonjour])
+* [GitHub][GitHub Desktop]
+* [PuTTY][PuTTY] 0.64 or greater.
+* [Cygwin][cwgwin]   (see: http://www.howtogeek.com/175008/the-non-beginners-guide-to-syncing-data-with-rsync/)
+* [apple Bonjour][bonjour]
 
 2) Clone this project and get it running!
 
@@ -45,10 +45,10 @@ Once saved the configuration is stored in PuTTY so you can always return to this
 [virtualbox]: https://www.virtualbox.org/
 [vagrant]: https://www.vagrantup.com/downloads.html
 [using-coreos]: http://coreos.com/docs/using-coreos/
-[GitHub][GitHub Desktop]: https://desktop.github.com/
-[PuTTY][PuTTY]: http://www.putty.org/
-[Cygwin][cwgwin]: https://cygwin.com/install.html  (see: http://www.howtogeek.com/175008/the-non-beginners-guide-to-syncing-data-with-rsync/)
-[apple][bonjour]: https://support.apple.com/kb/DL999?locale=en_US
+[GitHub Desktop]: https://desktop.github.com/
+[PuTTY]: http://www.putty.org/
+[cwgwin]: https://cygwin.com/install.html
+[bonjour]: https://support.apple.com/kb/DL999?locale=en_US
 
 #### Shared Folder Setup
 
