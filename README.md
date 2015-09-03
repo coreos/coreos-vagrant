@@ -1,7 +1,7 @@
-# CoreOS Vagrant
+# CoreOS Vagrant - For Windows 7
 
 This repo provides a template Vagrantfile to create a CoreOS virtual machine using the VirtualBox software hypervisor.
-After setup is complete you will have a single CoreOS virtual machine running on your local machine.
+After setup is complete you will have a coreos cluster of 3 virtual machines running with folder syncronization using rsync running on your local Windows 7 machine.
 
 ## Streamlined setup
 
