@@ -17,7 +17,7 @@ After setup is complete you will have a single CoreOS virtual machine running on
 2) Clone this project and get it running!
 
 ```
-git clone https://github.com/coreos/coreos-vagrant/
+git clone https://github.com/jschott2/coreos-vagrant/
 cd coreos-vagrant
 ```
 
