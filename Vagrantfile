@@ -3,6 +3,15 @@
 
 require 'fileutils'
 
+class Module
+  def redefine_const(name, value)
+    __send__(:remove_const, name) if const_defined?(name)
+    const_set(name, value)
+  end
+end
+
+# Vagrantfile API/syntax version. Don't touch unless you know what you're doing!
+VAGRANTFILE_API_VERSION = "2"
 Vagrant.require_version ">= 1.6.0"
 
 CLOUD_CONFIG_PATH = File.join(File.dirname(__FILE__), "user-data")
@@ -27,8 +36,30 @@ if ENV["NUM_INSTANCES"].to_i > 0 && ENV["NUM_INSTANCES"]
   $num_instances = ENV["NUM_INSTANCES"].to_i
 end
 
+BASE_IP_ADDR = ENV['BASE_IP_ADDR'] || "172.17.8"
+
 if File.exist?(CONFIG)
   require CONFIG
+end
+
+$required_plugins = %w(vagrant-triggers)
+
+# check either 'http_proxy' or 'HTTP_PROXY' environment variable
+$enable_proxy = !(ENV['HTTP_PROXY'] || ENV['http_proxy'] || '').empty?
+if $enable_proxy
+  $required_plugins.push('vagrant-proxyconf')
+  HTTP_PROXY = ENV['HTTP_PROXY'] || ENV['http_proxy']
+  HTTPS_PROXY = ENV['HTTPS_PROXY'] || ENV['https_proxy']
+  NO_PROXY = ENV['NO_PROXY'] || ENV['no_proxy'] || "localhost"
+end
+
+$required_plugins.each do |plugin|
+  need_restart = false
+  unless Vagrant.has_plugin? plugin
+    system "vagrant plugin install #{plugin}"
+    need_restart = true
+  end
+  exec "vagrant #{ARGV.join(' ')}" if need_restart
 end
 
 # Use old vb_xxx config variables when set
@@ -44,7 +75,7 @@ def vm_cpus
   $vb_cpus.nil? ? $vm_cpus : $vb_cpus
 end
 
-Vagrant.configure("2") do |config|
+Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # always use Vagrants insecure key
   config.ssh.insert_key = false
 
@@ -70,6 +101,21 @@ Vagrant.configure("2") do |config|
   # plugin conflict
   if Vagrant.has_plugin?("vagrant-vbguest") then
     config.vbguest.auto_update = false
+  end
+
+  # setup VM proxy to system proxy environment
+  if Vagrant.has_plugin?("vagrant-proxyconf") && $enable_proxy
+    config.proxy.http = HTTP_PROXY
+    config.proxy.https = HTTPS_PROXY
+    # most http tools, like wget and curl do not undestand IP range
+    # thus adding each node one by one to no_proxy
+    (1..($num_instances + 1)).each do |i|
+      Object.redefine_const(:NO_PROXY, "#{NO_PROXY},#{BASE_IP_ADDR}.#{i+100}")
+    end
+    config.proxy.no_proxy = NO_PROXY
+    # proxyconf plugin use wrong approach to set Docker proxy for CoreOS
+    # force proxyconf to skip Docker proxy setup
+    config.proxy.enabled = { docker: false }
   end
 
   (1..$num_instances).each do |i|
@@ -120,7 +166,7 @@ Vagrant.configure("2") do |config|
         vb.cpus = vm_cpus
       end
 
-      ip = "172.17.8.#{i+100}"
+      ip = "#{BASE_IP_ADDR}.#{i+100}"
       config.vm.network :private_network, ip: ip
 
       # Uncomment below to enable NFS for sharing the host machine into the coreos-vagrant VM.
@@ -135,6 +181,20 @@ Vagrant.configure("2") do |config|
 
       if File.exist?(CLOUD_CONFIG_PATH)
         config.vm.provision :file, :source => "#{CLOUD_CONFIG_PATH}", :destination => "/tmp/vagrantfile-user-data"
+        if $enable_proxy
+          config.vm.provision :shell, :privileged => true,
+          inline: <<-EOF
+          sed -i'*' "s|__PROXY_LINE__||g" /tmp/vagrantfile-user-data
+          sed -i'*' "s|__HTTP_PROXY__|#{HTTP_PROXY}|g" /tmp/vagrantfile-user-data
+          sed -i'*' "s|__HTTPS_PROXY__|#{HTTPS_PROXY}|g" /tmp/vagrantfile-user-data
+          sed -i'*' "s|__NO_PROXY__|#{NO_PROXY}|g" /tmp/vagrantfile-user-data
+          EOF
+        else
+          config.vm.provision :shell, :privileged => true,
+          inline: <<-EOF
+          sed -i'*' "/__PROXY_LINE__/d" /tmp/vagrantfile-user-data
+          EOF
+        end
         config.vm.provision :shell, :inline => "mv /tmp/vagrantfile-user-data /var/lib/coreos-vagrant/", :privileged => true
       end
 
