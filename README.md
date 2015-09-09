@@ -36,8 +36,15 @@ vagrant ssh
 The VMware provider is a commercial addon from Hashicorp that offers better stability and speed.
 If you use this provider follow these instructions.
 
+VMware Fusion:
 ```
 vagrant up --provider vmware_fusion
+vagrant ssh
+```
+
+VMware Workstation:
+```
+vagrant up --provider vmware_workstation
 vagrant ssh
 ```
 
@@ -46,7 +53,7 @@ vagrant ssh
 ``vagrant ssh`` connects you to the virtual machine.
 Configuration is stored in the directory so you can always return to this machine by executing vagrant ssh from the directory where the Vagrantfile was located.
 
-3) Get started [using CoreOS][using-coreos]
+4) Get started [using CoreOS][using-coreos]
 
 [virtualbox]: https://www.virtualbox.org/
 [vagrant]: https://www.vagrantup.com/downloads.html
@@ -92,6 +99,7 @@ Simply remove the old box file and vagrant will download the latest one the next
 
 ```
 vagrant box remove coreos --provider vmware_fusion
+vagrant box remove coreos --provider vmware_workstation
 vagrant box remove coreos --provider virtualbox
 ```
 

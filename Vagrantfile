@@ -12,6 +12,9 @@ CONFIG = File.join(File.dirname(__FILE__), "config.rb")
 # Defaults for config options defined in CONFIG
 $num_instances = 1
 $update_channel = "stable"
+$instance_name_prefix = "core"
+$update_channel = "alpha"
+$image_version = "current"
 $enable_serial_logging = false
 $vb_gui = false
 $vb_memory = 1024
@@ -20,6 +23,12 @@ $private_ip = "172.17.8.100"
 $public_ip = false
 $bridge = false
 $dhcp = false
+$share_home = false
+$vm_gui = false
+$vm_memory = 1024
+$vm_cpus = 1
+$shared_folders = {}
+$forwarded_ports = {}
 
 # Attempt to apply the deprecated environment variable NUM_INSTANCES to
 # $num_instances while allowing config.rb to override it
@@ -31,13 +40,33 @@ if File.exist?(CONFIG)
   require CONFIG
 end
 
-Vagrant.configure("2") do |config|
-  config.vm.box = "coreos-%s" % $update_channel
-  config.vm.box_version = ">= 308.0.1"
-  config.vm.box_url = "http://%s.release.core-os.net/amd64-usr/current/coreos_production_vagrant.json" % $update_channel
+# Use old vb_xxx config variables when set
+def vm_gui
+  $vb_gui.nil? ? $vm_gui : $vb_gui
+end
 
-  config.vm.provider :vmware_fusion do |vb, override|
-    override.vm.box_url = "http://%s.release.core-os.net/amd64-usr/current/coreos_production_vagrant_vmware_fusion.json" % $update_channel
+def vm_memory
+  $vb_memory.nil? ? $vm_memory : $vb_memory
+end
+
+def vm_cpus
+  $vb_cpus.nil? ? $vm_cpus : $vb_cpus
+end
+
+Vagrant.configure("2") do |config|
+  # always use Vagrants insecure key
+  config.ssh.insert_key = false
+
+  config.vm.box = "coreos-%s" % $update_channel
+  if $image_version != "current"
+      config.vm.box_version = $image_version
+  end
+  config.vm.box_url = "http://%s.release.core-os.net/amd64-usr/%s/coreos_production_vagrant.json" % [$update_channel, $image_version]
+
+  ["vmware_fusion", "vmware_workstation"].each do |vmware|
+    config.vm.provider vmware do |v, override|
+      override.vm.box_url = "http://%s.release.core-os.net/amd64-usr/%s/coreos_production_vagrant_vmware_fusion.json" % [$update_channel, $image_version]
+    end
   end
 
   config.vm.provider :virtualbox do |v|
@@ -67,7 +96,7 @@ Vagrant.configure("2") do |config|
   end
 
   (1..$num_instances).each do |i|
-    config.vm.define vm_name = "core-%02d" % i do |config|
+    config.vm.define vm_name = "%s-%02d" % [$instance_name_prefix, i] do |config|
       config.vm.hostname = vm_name
 
       if $enable_serial_logging
@@ -77,11 +106,13 @@ Vagrant.configure("2") do |config|
         serialFile = File.join(logdir, "%s-serial.txt" % vm_name)
         FileUtils.touch(serialFile)
 
-        config.vm.provider :vmware_fusion do |v, override|
-          v.vmx["serial0.present"] = "TRUE"
-          v.vmx["serial0.fileType"] = "file"
-          v.vmx["serial0.fileName"] = serialFile
-          v.vmx["serial0.tryNoRxLoss"] = "FALSE"
+        ["vmware_fusion", "vmware_workstation"].each do |vmware|
+          config.vm.provider vmware do |v, override|
+            v.vmx["serial0.present"] = "TRUE"
+            v.vmx["serial0.fileType"] = "file"
+            v.vmx["serial0.fileName"] = serialFile
+            v.vmx["serial0.tryNoRxLoss"] = "FALSE"
+          end
         end
 
         config.vm.provider :virtualbox do |vb, override|
@@ -94,14 +125,22 @@ Vagrant.configure("2") do |config|
         config.vm.network "forwarded_port", guest: 2375, host: ($expose_docker_tcp + i - 1), auto_correct: true
       end
 
-      config.vm.provider :vmware_fusion do |vb|
-        vb.gui = $vb_gui
+      $forwarded_ports.each do |guest, host|
+        config.vm.network "forwarded_port", guest: guest, host: host, auto_correct: true
+      end
+
+      ["vmware_fusion", "vmware_workstation"].each do |vmware|
+        config.vm.provider vmware do |v|
+          v.gui = vm_gui
+          v.vmx['memsize'] = vm_memory
+          v.vmx['numvcpus'] = vm_cpus
+        end
       end
 
       config.vm.provider :virtualbox do |vb|
-        vb.gui = $vb_gui
-        vb.memory = $vb_memory
-        vb.cpus = $vb_cpus
+        vb.gui = vm_gui
+        vb.memory = vm_memory
+        vb.cpus = vm_cpus
       end
 
       if private_ip
@@ -128,6 +167,13 @@ Vagrant.configure("2") do |config|
 
       # Uncomment below to enable NFS for sharing the host machine into the coreos-vagrant VM.
       #config.vm.synced_folder ".", "/home/core/share", id: "core", :nfs => true, :mount_options => ['nolock,vers=3,udp']
+      $shared_folders.each_with_index do |(host_folder, guest_folder), index|
+        config.vm.synced_folder host_folder.to_s, guest_folder.to_s, id: "core-share%02d" % index, nfs: true, mount_options: ['nolock,vers=3,udp']
+      end
+
+      if $share_home
+        config.vm.synced_folder ENV['HOME'], ENV['HOME'], id: "home", :nfs => true, :mount_options => ['nolock,vers=3,udp']
+      end
 
       if File.exist?(CLOUD_CONFIG_PATH)
         config.vm.provision :file, :source => "#{CLOUD_CONFIG_PATH}", :destination => "/tmp/vagrantfile-user-data"
