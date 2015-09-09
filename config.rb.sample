@@ -89,10 +89,6 @@ $new_discovery_url="https://discovery.etcd.io/new?size=#{$num_instances}"
 
 # Enable port forwarding from guest(s) to host machine, syntax is: { 80 => 8080 }, auto correction is enabled by default.
 #$forwarded_ports = {}
-# Setting for VirtualBox VMs
-#$vb_gui = false
-#$vb_memory = 1024
-#$vb_cpus = 1
 
 # Setting for IP addresses
 #$private_ip = "172.17.8.100"
