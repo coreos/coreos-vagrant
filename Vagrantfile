@@ -13,7 +13,6 @@ CONFIG = File.join(File.dirname(__FILE__), "config.rb")
 $num_instances = 1
 $update_channel = "stable"
 $instance_name_prefix = "core"
-$update_channel = "alpha"
 $image_version = "current"
 $enable_serial_logging = false
 $private_ip = "172.17.8.100"
@@ -88,7 +87,7 @@ Vagrant.configure("2") do |config|
   if public_ip == "dhcp"
     public_ip = false
     dhcp = true
-  else
+  elsif public_ip
     public_ip = IPAddr.new public_ip
   end
 
