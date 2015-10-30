@@ -85,5 +85,6 @@ end
 # $shared_folders = Hash[*['/home/foo/app1', '/home/foo/app2'].map{|d| [d, d]}.flatten]
 #$shared_folders = {}
 
-# Enable port forwarding from guest(s) to host machine, syntax is: { 80 => 8080 }, auto correction is enabled by default.
+# Enable port forwarding from guest(s) to host machine, syntax is: { 80 => 8080, 'ssh' => { 22 => 2223 } }, auto correction is enabled by default.
+# Using hash as the value makes key act as the "id:" allowing identification of ports.
 #$forwarded_ports = {}
