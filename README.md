@@ -116,3 +116,17 @@ Follow the [Enable Remote API instructions][coreos-enabling-port-forwarding] to 
 Then you can then use the `docker` command from your local shell by setting `DOCKER_HOST`:
 
     export DOCKER_HOST=tcp://localhost:2375
+
+## Local docker registry server
+
+If the `$local_docker_registry_server` configuration value is set to `true`, an additional virtual machine will be created with the docker registry service running on port 80. The service will be available in the cluster's virtual machine(s) as `registry.local`. You can use it like this:
+
+```
+vagrant ssh core-01
+docker pull busybox
+docker tag busybox registry.local/mybusybox
+docker push registry.local/mybusybox
+exit
+vagrant ssh core-02
+docker pull registry.local/mybusybox
+```

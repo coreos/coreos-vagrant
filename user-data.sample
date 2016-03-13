@@ -41,3 +41,9 @@ coreos:
 
         [Install]
         WantedBy=sockets.target
+    - name: docker.service
+      drop-ins:
+      - name: 10-allow-local-registry.conf
+        content: |
+          [Service]
+          Environment="DOCKER_OPTS=--insecure-registry registry.local"
