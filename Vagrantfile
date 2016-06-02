@@ -54,6 +54,14 @@ Vagrant.configure("2") do |config|
   end
   config.vm.box_url = "https://storage.googleapis.com/%s.release.core-os.net/amd64-usr/%s/coreos_production_vagrant.json" % [$update_channel, $image_version]
 
+  config.vm.provider :libvirt do |v|
+    config.vm.box = "dongsupark/coreos-%s" % $update_channel
+    config.vm.box_url = ""
+    v.driver = "kvm"
+    v.memory = $vm_memory
+    v.cpus = $vm_cpus
+  end
+
   ["vmware_fusion", "vmware_workstation"].each do |vmware|
     config.vm.provider vmware do |v, override|
       override.vm.box_url = "https://storage.googleapis.com/%s.release.core-os.net/amd64-usr/%s/coreos_production_vagrant_vmware_fusion.json" % [$update_channel, $image_version]
