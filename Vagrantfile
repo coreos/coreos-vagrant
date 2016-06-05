@@ -1,12 +1,36 @@
 # -*- mode: ruby -*-
 # # vi: set ft=ruby :
 
+## Get commandline parameter
+require 'getoptlong'
+
+
+
+opts = GetoptLong.new(
+  [ '--reapply-user-data', GetoptLong::NO_ARGUMENT]
+  )
+
+reapplyUserData=false
+
+opts.each do |opt, arg|
+  case opt
+  when '--reapply-user-data'
+   puts "reapplyUserData is asked"
+   reapplyUserData=true
+ end
+end
+
+
 require 'fileutils'
+
+
+## End Get commandline parameter
 
 Vagrant.require_version ">= 1.6.0"
 
 CLOUD_CONFIG_PATH = File.join(File.dirname(__FILE__), "user-data")
 CONFIG = File.join(File.dirname(__FILE__), "config.rb")
+UTILSFILE = File.join(File.dirname(__FILE__), "utils.rb")
 
 # Defaults for config options defined in CONFIG
 $num_instances = 1
@@ -31,6 +55,15 @@ if File.exist?(CONFIG)
   require CONFIG
 end
 
+puts "Utils loading"
+if File.exist?(UTILSFILE)
+  puts "Utils loaded"
+  require UTILSFILE
+  include Utils
+end
+
+
+
 # Use old vb_xxx config variables when set
 def vm_gui
   $vb_gui.nil? ? $vm_gui : $vb_gui
@@ -47,10 +80,26 @@ end
 Vagrant.configure("2") do |config|
   # always use Vagrants insecure key
   config.ssh.insert_key = false
+  
+  ## Network ##
+  
+  puts "proxyconf..."
+  if Vagrant.has_plugin?("vagrant-proxyconf")
+    puts "find proxyconf plugin !"
+    if $vagrant_proxy_enable
+      puts "http_proxy: " + $vagrant_proxy_http
+      config.proxy.http     = $vagrant_proxy_http
+      config.proxy.enabled = { docker: true }
+      puts "https_proxy: " + $vagrant_proxy_https
+      config.proxy.https    = $vagrant_proxy_https
+      puts "no_proxy: " + $vagrant_proxy_no_proxy
+      config.proxy.no_proxy = $vagrant_proxy_no_proxy
+    end
+  end 
 
   config.vm.box = "coreos-%s" % $update_channel
   if $image_version != "current"
-      config.vm.box_version = $image_version
+    config.vm.box_version = $image_version
   end
   config.vm.box_url = "https://storage.googleapis.com/%s.release.core-os.net/amd64-usr/%s/coreos_production_vagrant.json" % [$update_channel, $image_version]
 
@@ -128,6 +177,8 @@ Vagrant.configure("2") do |config|
       $shared_folders.each_with_index do |(host_folder, guest_folder), index|
         config.vm.synced_folder host_folder.to_s, guest_folder.to_s, id: "core-share%02d" % index, nfs: true, mount_options: ['nolock,vers=3,udp']
       end
+      
+      
 
       if $share_home
         config.vm.synced_folder ENV['HOME'], ENV['HOME'], id: "home", :nfs => true, :mount_options => ['nolock,vers=3,udp']
@@ -137,6 +188,17 @@ Vagrant.configure("2") do |config|
         config.vm.provision :file, :source => "#{CLOUD_CONFIG_PATH}", :destination => "/tmp/vagrantfile-user-data"
         config.vm.provision :shell, :inline => "mv /tmp/vagrantfile-user-data /var/lib/coreos-vagrant/", :privileged => true
       end
+      
+      if (reapplyUserData)
+        puts "Reapply user-data asked..."
+        if File.exist?(CLOUD_CONFIG_PATH)
+          config.vm.provision :file, run: "always" , :source => "#{CLOUD_CONFIG_PATH}", :destination => "/tmp/vagrantfile-user-data"
+          config.vm.provision :shell, run: "always" ,:inline => "coreos-cloudinit --from-file  /var/lib/coreos-vagrant/vagrantfile-user-data", :privileged => true
+        end 
+        puts "...End reapply user-data asked"
+      end
+      
+      Utils.set_share(config, ip)
 
     end
   end

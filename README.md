@@ -61,6 +61,8 @@ Configuration is stored in the directory so you can always return to this machin
 
 #### Shared Folder Setup
 
+##### NFS
+
 There is optional shared folder setup.
 You can try it out by adding a section to your Vagrantfile like this.
 
@@ -71,15 +73,33 @@ config.vm.synced_folder ".", "/home/core/share", id: "core", :nfs => true,  :mou
 
 After a 'vagrant reload' you will be prompted for your local machine password.
 
+
+##### Samba
+
+On windows, prefers samba for simplicity and performance.
+Completly inspired by https://github.com/blinkreaction/boot2docker-vagrant
+You will find utils.rb which contains code to mount any type of endpoint and sync-folders.yml which contains share parameters.
+take a look at this file for more configuration details (samba version, domain, ...etc).     
+
 #### Provisioning with user-data
 
 The Vagrantfile will provision your CoreOS VM(s) with [coreos-cloudinit][coreos-cloudinit] if a `user-data` file is found in the project directory.
 coreos-cloudinit simplifies the provisioning process through the use of a script or cloud-config document.
 
-To get started, copy `user-data.sample` to `user-data` and make any necessary modifications.
+To get started, copy `user-data.sample` or `user-data.x.sample` to `user-data` and make any necessary modifications.
 Check out the [coreos-cloudinit documentation][coreos-cloudinit] to learn about the available features.
 
 [coreos-cloudinit]: https://github.com/coreos/coreos-cloudinit
+
+###### Reapply user-data on prexistant instance
+
+ command line option : '--reapply-user-data' force coreos on startup to reapply your user-data.
+ e.g.: 
+ 
+ ```sh
+vagrant  --reapply-user-data up
+```
+  
 
 #### Configuration
 

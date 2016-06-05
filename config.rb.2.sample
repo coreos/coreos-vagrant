@@ -1,5 +1,6 @@
 # Size of the CoreOS cluster created by Vagrant
-$num_instances=1
+# Better with 3 instances to test etcd power
+$num_instances=3
 
 # Used to fetch a new discovery token for a cluster of size $num_instances
 $new_discovery_url="https://discovery.etcd.io/new?size=#{$num_instances}"
@@ -10,7 +11,8 @@ if File.exists?('user-data') && ARGV[0].eql?('up')
   require 'open-uri'
   require 'yaml'
 
-  token = open($new_discovery_url).read
+  #disable token discovery
+  #token = open($new_discovery_url).read
 
   data = YAML.load(IO.readlines('user-data')[1..-1].join)
 
@@ -33,6 +35,15 @@ if File.exists?('user-data') && ARGV[0].eql?('up')
   File.open('user-data', 'w') { |file| file.write("#cloud-config\n\n#{yaml}") }
 end
 
+# Vagrant proxy section
+$vagrant_proxy_enable=false
+$vagrant_proxy_http=ENV["http_proxy"]
+$vagrant_proxy_https=ENV["https_proxy"]
+$vagrant_proxy_provider={ docker: true }  
+$vagrant_proxy_no_proxy=ENV["no_proxy"]
+# End Vagrant proxy section
+
+
 #
 # coreos-vagrant is configured through a series of configuration
 # options (global ruby variables) which are detailed below. To modify
@@ -53,7 +64,7 @@ end
 #$image_version = "current"
 
 # Official CoreOS channel from which updates should be downloaded
-#$update_channel='alpha'
+$update_channel='stable'
 
 # Log the serial consoles of CoreOS VMs to log/
 # Enable by setting value to true, disable with false
@@ -86,4 +97,4 @@ $expose_docker_tcp=2375
 #$shared_folders = {}
 
 # Enable port forwarding from guest(s) to host machine, syntax is: { 80 => 8080 }, auto correction is enabled by default.
-#$forwarded_ports = {}
+$forwarded_ports = {}
