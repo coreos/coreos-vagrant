@@ -1,0 +1,53 @@
+# Sync folders configuration
+synced_folders:
+  # vboxsf - native VirtualBox method, cross-platform, convenient and reliable, terribly slow
+  # nfs: better performance and convenience on Mac
+  # nfs2: optimized nfs settings, experimental (default on Mac)
+  # smb: better performance and convenience on Windows. Requires Vagrant to be run with admin privileges (not recommended).
+  # smb2: does not require running vagrant as admin (default on Windows).
+  # rsync: best performance, cross-platform platform, one-way only
+  #   Run `vagrant rsync-auto` to start auto sync.
+  #   When using rsync sync type the "rsync_folders" list below is mandatory.
+  # vboxsf: best compatibility and ease of setup, but poor performance.
+  # default: defaults to nfs2 on Mac and smb2 on Windows.
+  # '': disable synced folders. Useful in case you want to use 'individual_mounts' option below.
+  type: 'smb2'
+  # smb_user, smb_password - The username and password used for authentication to mount the SMB mount.
+  # This is usually your Windows username and password, unless you created a dedicated user for vagrant.
+  # If using the 'smb2' type above the user and share will be configured automatically.
+  smb_username: 'vagrant'
+  smb_password: 'mYP@ssw0rdToChhh@nge'
+  # smb user domain
+  smb_domain: ''
+  # smb protocol version 
+  smb_vers: '2.1'
+  # Create smb share on vagrant up (if type smb2). Set to false if you want to or already created the user and the smb share manually.
+  # If false, the share name should be equal to the directory name in which Vagrantfile is located.
+  smb2_auto: true
+  # List of folders to sync with rsync. These should be subfolder names within the <Projects> folder (e.g. "drupal7")
+  # Uncomment and add folders per the example below as neccessary.
+  # Note: you'll have to run `vagrant rsync-auto` in the background to keep the files in sync as you make changes
+  rsync_folders:
+    #- "projectA"  # rsync projectA folder
+    #- "projectB"  # rsync projectB folder
+    #- ""  # rsync the whole <Projects> folder. WARNING: don't do this if your <Projects> folder is big.
+  # Coalescing threshold in seconds for https://github.com/smerrill/vagrant-gatling-rsync
+  rsync_latency: 0.5
+  # Start rsync-auto automatically (Mac only for now)
+  rsync_auto: true
+  # Patterns excluded from rsync. Passed as --exclude <pattern> to rsync.
+  rsync_exclude:
+    - ".git/"
+    #- "files/"
+  # List of folders to mount individually. This is really only needed in the case where you want a container to write
+  # something back to the Host OS. If that describes your situation, use type = vboxsf. If you just want more control
+  # over what's mounted, go with type = nfs, which is much faster.
+  individual_mounts:
+    #- location: './logs'
+    #  mount: '/home/docker/logs'
+    #  type: 'vboxsf'
+    #  options: 'uid=501,gid=20'
+    #- location: './logs'
+    #  mount: '/home/docker/logs'
+    #  type: 'nfs'
+    #  options: 'nolock,vers=3,tcp'

@@ -1,0 +1,71 @@
+#cloud-config
+
+---
+coreos:
+  fleet:
+    etcd-servers: http://$private_ipv4:2379
+    public-ip: "$private_ipv4"
+  flannel:
+    interface: "$public_ipv4"
+  units:
+  - name: etcd.service
+    command: start
+    content: |
+      Description=etcd 2.0
+      After=docker.service
+      Conflicts=etcd.service
+
+      [Service]
+      User=etcd
+      Type=notify
+      EnvironmentFile=/etc/environment
+      TimeoutStartSec=0
+      SyslogIdentifier=writer_process
+      Environment=ETCD_DATA_DIR=/var/lib/etcd2
+      Environment=ETCD_NAME=%m
+      ExecStart=/bin/bash -c "/usr/bin/etcd2 \
+        -name %H \
+        -listen-client-urls http://0.0.0.0:2379 \
+        -advertise-client-urls http://$COREOS_PRIVATE_IPV4:2379 \
+        -listen-peer-urls http://0.0.0.0:2380 \
+        -initial-advertise-peer-urls http://$COREOS_PRIVATE_IPV4:2380 \
+        -initial-cluster core-01=http://172.17.8.101:2380,core-02=http://172.17.8.102:2380,core-03=http://172.17.8.103:2380\
+        -initial-cluster-state new"
+      Restart=always
+      RestartSec=10s
+      LimitNOFILE=40000
+      TimeoutStartSec=0
+
+
+
+      [Install]
+      WantedBy=multi-user.target
+
+      [X-Fleet]
+      Conflicts=etcd*
+  - name: flanneld.service
+    drop-ins:
+    - name: 50-network-config.conf
+      content: |
+        [Service]
+        ExecStartPre=/usr/bin/etcdctl set /coreos.com/network/config '{ "Network": "10.1.0.0/16" }'
+    command: start
+  - name: docker.service
+    drop-ins:
+    - name: 20-http-proxy.conf
+      content: |
+        [Service]
+        Environment="HTTP_PROXY=http://yourproxy:port" "HTTPS_PROXY=http://yourproxy:port" "http-proxy=http://yourproxy:port" "https-proxy=http://yourproxy:port"    "NO_PROXY=localhost,127.0.0.0/8,172.17.0.0/16,.sock,yourproxy,/var/run/docker.sock"
+    command: restart
+  - name: fleet.service
+    command: start
+  - name: update-engine.service
+    command: stop
+  - name: locksmithd.service
+    command: stop
+write_files:
+- path: "/home/core/.toolboxrc"
+  owner: core
+  content: |-
+    TOOLBOX_DOCKER_IMAGE=ubuntu
+    TOOLBOX_DOCKER_TAG=14.04
