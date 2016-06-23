@@ -4,13 +4,17 @@ $num_instances=1
 # Used to fetch a new discovery token for a cluster of size $num_instances
 $new_discovery_url="https://discovery.etcd.io/new?size=#{$num_instances}"
 
+# Enter pre-existing etcd discovery url here
+#$discovery_url="https://discovery.etcd.io/<token>"
+
 # Automatically replace the discovery token on 'vagrant up'
 
 if File.exists?('user-data') && ARGV[0].eql?('up')
   require 'open-uri'
   require 'yaml'
 
-  token = open($new_discovery_url).read
+  token = open($new_discovery_url).read unless $discovery_url
+  token = $discovery_url unless token
 
   data = YAML.load(IO.readlines('user-data')[1..-1].join)
 
