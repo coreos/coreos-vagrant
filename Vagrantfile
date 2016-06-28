@@ -48,6 +48,8 @@ end
 Vagrant.configure("2") do |config|
   # always use Vagrants insecure key
   config.ssh.insert_key = false
+  # forward ssh agent to easily ssh into the different machines
+  config.ssh.forward_agent = true
 
   config.vm.box = "coreos-%s" % $update_channel
   if $image_version != "current"
