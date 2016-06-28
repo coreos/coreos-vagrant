@@ -1,0 +1,19 @@
+[Unit]
+Description=Redis Database Service
+Requires=docker.service
+
+After=docker.service
+
+[Service]
+TimeoutStartSec=0
+KillMode=none
+
+ExecStartPre=-/usr/bin/docker kill redis-db.%i
+ExecStartPre=-/usr/bin/docker rm redis-db.%i
+ExecStartPre=/usr/bin/docker pull redis:latest
+ExecStart=/usr/bin/docker run --name redis-db.%i redis
+
+ExecStop=/usr/bin/docker stop redis-db.%i
+
+[X-Fleet]
+Conflicts=redis-db@*.service

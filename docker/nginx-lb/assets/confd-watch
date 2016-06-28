@@ -1,0 +1,29 @@
+#!/bin/bash
+
+set -eo pipefail
+
+# etcd2 use IANA-assigned port 2379 and 2380, but port 4001 and 7001 are
+# still available for compatibility
+export ETCD_PORT=${ETCD_PORT:-4001}
+export HOST_IP=${HOST_IP:-172.17.8.1}
+export ETCD=$HOST_IP:$ETCD_PORT
+
+echo "[nginx] booting container. ETCD: $ETCD."
+
+# Make initial configuration every 5 seconds until successful
+until confd -onetime -node $ETCD -config-file /etc/confd/conf.d/nginx.toml; do
+    echo "[nginx] waiting for confd to create initial nginx configuration."
+    sleep 5
+done
+
+# Polling `confd` process for changes every 10 seconds
+confd -interval 10 -node $ETCD -config-file /etc/confd/conf.d/nginx.toml &
+echo "[nginx] confd is now monitoring etcd for changes..."
+
+# Start the Nginx service using the generated config
+echo "[nginx] starting nginx service..."
+service nginx start
+
+# Follow the logs to allow the script to continue running
+tail -f /var/log/nginx/*.log
+

@@ -1,0 +1,23 @@
+log_format upstreamlog '[$time_local] $remote_addr passed to: $upstream_addr: $request Upstream Response Time: $upstream_response_time Request time: $request_time';
+
+upstream www_pool {
+{{ range getvs "/services/redis-workbench/*" }}
+    server {{ . }}:80;
+{{ end }}
+}
+
+server {
+    listen 80 default_server;
+    listen [::]:80 default_server ipv6only=on;
+
+    access_log /var/log/nginx/access.log upstreamlog;
+
+    location / {
+        proxy_pass http://www_pool;
+        proxy_redirect off;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    }
+}
+

@@ -1,0 +1,19 @@
+[Unit]
+Description=MySQL Database Service
+Requires=docker.service
+
+After=docker.service
+
+[Service]
+TimeoutStartSec=0
+KillMode=none
+
+ExecStartPre=-/usr/bin/docker kill mysql.%i
+ExecStartPre=-/usr/bin/docker rm mysql.%i
+ExecStartPre=/usr/bin/docker pull mysql:5.5
+ExecStart=/usr/bin/docker run --name mysql.%i -e MYSQL_ROOT_PASSWORD=foobar -p 3306:3306 mysql
+
+ExecStop=/usr/bin/docker stop mysql.%i
+
+[X-Fleet]
+Conflicts=mysql@*.service

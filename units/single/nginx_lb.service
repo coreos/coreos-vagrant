@@ -1,0 +1,30 @@
+[Unit]
+Description=Nginx load balancer for web server backends
+
+Requires=etcd2.service
+Requires=docker.service
+
+After=etcd2.service
+After=docker.service
+
+[Service]
+TimeoutStartSec=0
+KillMode=none
+
+# Get CoreOS environmental variables
+EnvironmentFile=/etc/environment
+
+# Pre-start and Start
+ExecStartPre=-/usr/bin/docker kill redis-workbench-lb
+ExecStartPre=-/usr/bin/docker rm redis-workbench-lb
+ExecStartPre=/usr/bin/docker pull kcyeu/redis-workbench-lb
+ExecStart=/usr/bin/docker run --name redis-workbench-lb \
+-p ${COREOS_PUBLIC_IPV4}:80:80 \
+-e HOST_IP=${COREOS_PRIVATE_IPV4} \
+kcyeu/redis-workbench-lb /usr/local/bin/confd-watch
+
+# Stop
+ExecStop=/usr/bin/docker stop redis-workbench-lb
+
+[X-Fleet]
+Conflicts=redis-workbench@*.service

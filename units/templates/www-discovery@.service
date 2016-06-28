@@ -1,0 +1,29 @@
+[Unit]
+Description=Announce WWW on instance %i
+BindsTo=redis-workbench@%i.service
+
+Requires=etcd2.service
+Requires=redis-workbench@%i.service
+
+After=etcd2.service
+After=redis-workbench@%i.service
+
+[Service]
+TimeoutStartSec=0
+
+ExecStart=/bin/bash -a -c '\
+  while true; do \
+    curl -f $(/usr/bin/docker inspect --format=\'{{.NetworkSettings.IPAddress}}\' redis-workbench.%i) > /dev/null 2>&1; \
+    if [ $? -eq 0 ]; then \
+      etcdctl set /services/redis-workbench/%i $(/usr/bin/docker inspect --format=\'{{.NetworkSettings.IPAddress}}\' redis-workbench.%i) --ttl 30; \
+    else \
+      etcdctl rm /services/redis-workbench/%i; \
+    fi; \
+    sleep 10; \
+  done'
+
+# Stop
+ExecStop=/usr/bin/etcdctl rm /services/redis-workbench/%i
+
+[X-Fleet]
+MachineOf=redis-workbench@%i.service
