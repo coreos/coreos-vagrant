@@ -41,3 +41,19 @@ coreos:
 
         [Install]
         WantedBy=sockets.target
+    - name: start-docker-swarm.service
+      command: start
+      enable: true
+      content: |
+        [Unit]
+        Description=Start Containers for docker-swarm
+
+        [Service]
+        Restart=always
+        ExecStartPost=/usr/bin/docker start swarm-manager;true
+        ExecStart=/usr/bin/docker start swarm-agent 
+        ExecStop=/usr/bin/docker stop -t 2 swarm-agent 
+        ExecStopPost=/usr/bin/docker stop -t 2 swarm-manager;true
+
+        [Install]
+        WantedBy=default.target
