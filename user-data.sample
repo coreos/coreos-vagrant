@@ -41,3 +41,19 @@ coreos:
 
         [Install]
         WantedBy=sockets.target
+    - name: enable-docker-tcp.service
+      command: start
+      enable: true
+      content: |
+        [Unit]
+        Description=Enable Docker Socket for the API
+
+        [Service]
+        ExecStartPre=/usr/bin/systemctl stop docker.socket
+        ExecStartPre=/usr/bin/systemctl stop docker-tcp.socket
+        ExecStartPre=/usr/bin/systemctl stop docker
+        ExecStart=/usr/bin/systemctl enable docker-tcp.socket
+        ExecStartPost=/usr/bin/systemctl start docker.socket
+        ExecStartPost=/usr/bin/systemctl start docker-tcp.socket
+        Type=oneshot
+        RemainAfterExit=true
