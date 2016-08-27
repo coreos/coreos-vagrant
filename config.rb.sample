@@ -68,6 +68,12 @@ end
 #   export DOCKER_HOST='tcp://127.0.0.1:2375'
 #$expose_docker_tcp=2375
 
+# Enable docker-swarm support.
+# If you enable it, the docker-swarm agent will be run on all instances. The docker-swarm
+# manager will be run on the first instance. You can access the docker-swarm on port 3375
+# of the first instance.
+#$docker_swarm=false
+
 # Enable NFS sharing of your home directory ($HOME) to CoreOS
 # It will be mounted at the same path in the VM as on the host.
 # Example: /Users/foobar -> /Users/foobar

@@ -41,3 +41,25 @@ coreos:
 
         [Install]
         WantedBy=sockets.target
+    - name: start-docker-swarm.service
+      command: start
+      enable: true
+      content: |
+        [Unit]
+        Description=Start Containers for docker-swarm
+
+        [Service]
+        Restart=always
+        ExecStartPost=/usr/bin/docker start swarm-manager;true
+        ExecStart=/usr/bin/docker start swarm-agent 
+        ExecStop=/usr/bin/docker stop -t 2 swarm-agent 
+        ExecStopPost=/usr/bin/docker stop -t 2 swarm-manager;true
+
+        [Install]
+        WantedBy=default.target
+    - name: docker.service
+      drop-ins:
+        - name: 10-docker-swarm.conf
+          content: |
+            [Service]
+            Environment="DOCKER_OPTS=--cluster-advertise eth1:2375 --cluster-store etcd://127.0.0.1:2379"
