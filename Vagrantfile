@@ -21,6 +21,7 @@ $vm_cpus = 1
 $vb_cpuexecutioncap = 100
 $shared_folders = {}
 $forwarded_ports = {}
+$enable_discovery_service = true
 
 # Attempt to apply the deprecated environment variable NUM_INSTANCES to
 # $num_instances while allowing config.rb to override it
@@ -137,8 +138,13 @@ Vagrant.configure("2") do |config|
         config.vm.synced_folder ENV['HOME'], ENV['HOME'], id: "home", :nfs => true, :mount_options => ['nolock,vers=3,udp']
       end
 
-      if File.exist?(CLOUD_CONFIG_PATH)
-        config.vm.provision :file, :source => "#{CLOUD_CONFIG_PATH}", :destination => "/tmp/vagrantfile-user-data"
+      # A single user-data file is used when using a discovery service. When statically configuring
+      # the cluster there will be a user-data file for each node with the node instance id appended (ex. user-data-01)
+      if $enable_discovery_service && File.exist?(CLOUD_CONFIG_PATH)
+        config.vm.provision :file, :source => CLOUD_CONFIG_PATH, :destination => "/tmp/vagrantfile-user-data"
+        config.vm.provision :shell, :inline => "mv /tmp/vagrantfile-user-data /var/lib/coreos-vagrant/", :privileged => true
+      elsif File.exist?("#{CLOUD_CONFIG_PATH}-%02d" % i)
+        config.vm.provision :file, :source => "#{CLOUD_CONFIG_PATH}-%02d" % i, :destination => "/tmp/vagrantfile-user-data"
         config.vm.provision :shell, :inline => "mv /tmp/vagrantfile-user-data /var/lib/coreos-vagrant/", :privileged => true
       end
 

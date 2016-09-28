@@ -1,25 +1,67 @@
 # Size of the CoreOS cluster created by Vagrant
 $num_instances=1
 
+# Change basename of the VM
+# The default value is "core", which results in VMs named starting with
+# "core-01" through to "core-${num_instances}".
+#$instance_name_prefix="core"
+
+# Enables the use of the etcd discovery service. The default is enabled.
+# When disabled the cluster will be statically defined with each instance
+# as a member.
+#$enable_discovery_service=true
+
 # Used to fetch a new discovery token for a cluster of size $num_instances
 $new_discovery_url="https://discovery.etcd.io/new?size=#{$num_instances}"
-
-# Automatically replace the discovery token on 'vagrant up'
 
 if File.exists?('user-data') && ARGV[0].eql?('up')
   require 'open-uri'
   require 'yaml'
 
-  token = open($new_discovery_url).read
-
   data = YAML.load(IO.readlines('user-data')[1..-1].join)
 
-  if data.key? 'coreos' and data['coreos'].key? 'etcd'
-    data['coreos']['etcd']['discovery'] = token
-  end
+  # Automatically replace the discovery token on 'vagrant up'
+  if $enable_discovery_service
+    token = open($new_discovery_url).read
 
-  if data.key? 'coreos' and data['coreos'].key? 'etcd2'
-    data['coreos']['etcd2']['discovery'] = token
+    if data.key? 'coreos' and data['coreos'].key? 'etcd'
+      data['coreos']['etcd']['discovery'] = token
+    end
+
+    if data.key? 'coreos' and data['coreos'].key? 'etcd2'
+      data['coreos']['etcd2']['discovery'] = token
+    end
+  else
+    # Static cluster configuration explicitly configures the initial cluster members
+
+    # etcd v1 uses peers list
+    peers = (1..$num_instances).map{|i|
+      ip = "172.17.8.#{i+100}"
+      "%s:7001" % ip
+    }.join(",")
+
+    if data.key? 'coreos' and data['coreos'].key? 'etcd'
+      data['coreos']['etcd']['peers'] = peers 
+    end
+
+    # etcd2 uses initial cluster key-value list
+    initial_cluster = (1..$num_instances).map{|i|
+      ip = "172.17.8.#{i+100}"
+      "%s-%02d=http://%s:2380" % [$instance_name_prefix, i, ip]
+    }.join(",")
+
+    if data.key? 'coreos' and data['coreos'].key? 'etcd2'
+      data['coreos']['etcd2']['initial-cluster'] = initial_cluster
+    end
+
+    # Remove discovery token if it exists
+    if data.key? 'coreos' and data['coreos'].key? 'etcd' and data['coreos']['etcd'].key? 'discovery'
+      data['coreos']['etcd'].delete 'discovery'
+    end
+
+    if data.key? 'coreos' and data['coreos'].key? 'etcd2' and data['coreos']['etcd2'].key? 'discovery'
+      data['coreos']['etcd2'].delete 'discovery'
+    end
   end
 
   # Fix for YAML.load() converting reboot-strategy from 'off' to `false`
@@ -29,8 +71,34 @@ if File.exists?('user-data') && ARGV[0].eql?('up')
     end
   end
 
-  yaml = YAML.dump(data)
-  File.open('user-data', 'w') { |file| file.write("#cloud-config\n\n#{yaml}") }
+  if $enable_discovery_service
+    yaml = YAML.dump(data)
+    File.open('user-data', 'w') { |file| file.write("#cloud-config\n\n#{yaml}") }
+  else
+    # When static configuration is used a name must be specified.
+    # This requires a unique user-data file for each node. The user-data files
+    # will have the node instance id appended. (ex. user-data-01)
+    (1..$num_instances).each do |i|
+      if data.key? 'coreos' and data['coreos'].key? 'etcd'
+        data['coreos']['etcd']['name'] = "%s-%02d" % [$instance_name_prefix, i]
+      end
+
+      if data.key? 'coreos' and data['coreos'].key? 'etcd2'
+        data['coreos']['etcd2']['name'] = "%s-%02d" % [$instance_name_prefix, i]
+      end
+
+      # etcd v1 requires that a single node to not have a peer list.
+      # Choosing last instance to be initial leader.
+      if (i == $num_instances)
+        if data.key? 'coreos' and data['coreos'].key? 'etcd' and data['coreos']['etcd'].key? 'peers'
+          data['coreos']['etcd'].delete 'peers'
+        end
+      end
+
+      yaml = YAML.dump(data)
+      File.open("user-data-%02d" % i, 'w') { |file| file.write("#cloud-config\n\n#{yaml}") }
+    end
+  end
 end
 
 #
@@ -39,11 +107,6 @@ end
 # these options, first copy this file to "config.rb". Then simply
 # uncomment the necessary lines, leaving the $, and replace everything
 # after the equals sign..
-
-# Change basename of the VM
-# The default value is "core", which results in VMs named starting with
-# "core-01" through to "core-${num_instances}".
-#$instance_name_prefix="core"
 
 # Change the version of CoreOS to be installed
 # To deploy a specific version, simply set $image_version accordingly.
