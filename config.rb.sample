@@ -33,14 +33,22 @@ if File.exists?('user-data') && ARGV[0].eql?('up')
     end
   else
     # Static cluster configuration explicitly configures the initial cluster members
+
+    # etcd v1 uses peers list
+    peers = (1..$num_instances).map{|i|
+      ip = "172.17.8.#{i+100}"
+      "%s:7001" % ip
+    }.join(",")
+
+    if data.key? 'coreos' and data['coreos'].key? 'etcd'
+      data['coreos']['etcd']['peers'] = peers 
+    end
+
+    # etcd2 uses initial cluster key-value list
     initial_cluster = (1..$num_instances).map{|i|
       ip = "172.17.8.#{i+100}"
       "%s-%02d=http://%s:2380" % [$instance_name_prefix, i, ip]
     }.join(",")
-
-    if data.key? 'coreos' and data['coreos'].key? 'etcd'
-      data['coreos']['etcd']['initial-cluster'] = initial_cluster
-    end
 
     if data.key? 'coreos' and data['coreos'].key? 'etcd2'
       data['coreos']['etcd2']['initial-cluster'] = initial_cluster
@@ -77,6 +85,14 @@ if File.exists?('user-data') && ARGV[0].eql?('up')
 
       if data.key? 'coreos' and data['coreos'].key? 'etcd2'
         data['coreos']['etcd2']['name'] = "%s-%02d" % [$instance_name_prefix, i]
+      end
+
+      # etcd v1 requires that a single node to not have a peer list.
+      # Choosing last instance to be initial leader.
+      if (i == $num_instances)
+        if data.key? 'coreos' and data['coreos'].key? 'etcd' and data['coreos']['etcd'].key? 'peers'
+          data['coreos']['etcd'].delete 'peers'
+        end
       end
 
       yaml = YAML.dump(data)
