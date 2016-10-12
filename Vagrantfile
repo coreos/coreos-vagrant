@@ -68,6 +68,17 @@ Vagrant.configure("2") do |config|
     # in CoreOS, so tell Vagrant that so it can be smarter.
     v.check_guest_additions = false
     v.functional_vboxsf     = false
+
+    unless File.exist?("additional_disk_1st.vdi")
+      v.customize ["createhd",  "--filename", "additional_disk_1st", "--size", "2048"]
+      v.customize ["storagectl", :id, "--name", "SATA Controller", "--add", "sata"]
+    end
+    v.customize ["storageattach", :id, "--storagectl", "SATA Controller", "--port", "2", "--type", "hdd", "--medium", "additional_disk_1st.vdi"]
+
+    unless File.exist?("additional_disk_2nd.vdi")
+      v.customize ["createhd",  "--filename", "additional_disk_2nd", "--size", "2048"]
+    end
+    v.customize ["storageattach", :id, "--storagectl", "SATA Controller", "--port", "3", "--type", "hdd", "--medium", "additional_disk_2nd.vdi"]
   end
 
   # plugin conflict
