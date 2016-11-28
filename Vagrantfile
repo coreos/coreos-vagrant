@@ -105,8 +105,12 @@ Vagrant.configure("2") do |config|
         config.vm.network "forwarded_port", guest: 2375, host: ($expose_docker_tcp + i - 1), host_ip: "127.0.0.1", auto_correct: true
       end
 
-      $forwarded_ports.each do |guest, host|
-        config.vm.network "forwarded_port", guest: guest, host: host, auto_correct: true
+      $forwarded_ports.each do |k,v|
+        if v.is_a?(Hash)
+          config.vm.network "forwarded_port", guest: v.keys[0], host: v.values[0], auto_correct: true, id: k
+        else
+          config.vm.network "forwarded_port", guest: k, host: v, auto_correct: true
+        end
       end
 
       ["vmware_fusion", "vmware_workstation"].each do |vmware|
