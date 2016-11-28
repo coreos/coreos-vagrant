@@ -104,7 +104,7 @@ Vagrant.configure("2") do |config|
       if $expose_docker_tcp
         config.vm.network "forwarded_port", guest: 2375, host: ($expose_docker_tcp + i - 1), host_ip: "127.0.0.1", auto_correct: true
       end
-
+	  
       $forwarded_ports.each do |guest, host|
         config.vm.network "forwarded_port", guest: guest, host: host, auto_correct: true
       end
@@ -142,6 +142,22 @@ Vagrant.configure("2") do |config|
         config.vm.provision :shell, :inline => "mv /tmp/vagrantfile-user-data /var/lib/coreos-vagrant/", :privileged => true
       end
 
+	  # configure docker-swarm
+	  if (i == 1)
+		config.vm.network "forwarded_port", guest: 3375, host: 3375, host_ip: "127.0.0.1", auto_correct: true
+		#start docker-swarm manager on first host
+		config.vm.provision "shell" do |s|
+			s.inline = "docker rm -f swarm-manager; true && docker run -d --name swarm-manager --net=host --restart always swarm:latest manage -H tcp://$1:3375 etcd://127.0.0.1:2379"
+			s.args = [ip]
+		end
+	  end
+  	  #start docker-swarm agent on all hosts
+	  config.vm.provision "shell" do |s|
+		s.inline = "docker rm -f swarm-agent; true && docker run -d --name swarm-agent --net=host --restart always swarm:latest join --addr=$1:2375 etcd://127.0.0.1:2379"
+		s.args = [ip]
+	  end
+	  # end of docker-swarm configuration		
+	  
     end
   end
 end
