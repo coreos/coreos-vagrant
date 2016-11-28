@@ -2,6 +2,7 @@
 # # vi: set ft=ruby :
 
 require 'fileutils'
+require 'ipaddr'
 
 Vagrant.require_version ">= 1.6.0"
 
@@ -10,10 +11,14 @@ CONFIG = File.join(File.dirname(__FILE__), "config.rb")
 
 # Defaults for config options defined in CONFIG
 $num_instances = 1
+$update_channel = "stable"
 $instance_name_prefix = "core"
-$update_channel = "alpha"
 $image_version = "current"
 $enable_serial_logging = false
+$private_ip = "172.17.8.100"
+$public_ip = false
+$bridge = false
+$dhcp = false
 $share_home = false
 $vm_gui = false
 $vm_memory = 1024
@@ -75,6 +80,20 @@ Vagrant.configure("2") do |config|
     config.vbguest.auto_update = false
   end
 
+  private_ip = $private_ip
+  if private_ip
+    private_ip = IPAddr.new private_ip
+  end
+
+  dhcp = $dhcp
+  public_ip = $public_ip
+  if public_ip == "dhcp"
+    public_ip = false
+    dhcp = true
+  elsif public_ip
+    public_ip = IPAddr.new public_ip
+  end
+
   (1..$num_instances).each do |i|
     config.vm.define vm_name = "%s-%02d" % [$instance_name_prefix, i] do |config|
       config.vm.hostname = vm_name
@@ -124,8 +143,27 @@ Vagrant.configure("2") do |config|
         vb.customize ["modifyvm", :id, "--cpuexecutioncap", "#{$vb_cpuexecutioncap}"]
       end
 
-      ip = "172.17.8.#{i+100}"
-      config.vm.network :private_network, ip: ip
+      if private_ip
+        config.vm.network :private_network, ip: private_ip.to_s
+        private_ip.succ
+      end
+      
+      if public_ip
+        public_ip.succ
+        if $bridge
+          config.vm.network :public_network, ip: public_ip.to_s, bridge: $bridge
+        else
+          config.vm.network :public_network, ip: public_ip.to_s
+        end
+      end
+
+      if $dhcp
+        if $bridge
+          config.vm.network :public_network, bridge: $bridge
+        else
+          config.vm.network :public_network
+        end
+      end
 
       # Uncomment below to enable NFS for sharing the host machine into the coreos-vagrant VM.
       #config.vm.synced_folder ".", "/home/core/share", id: "core", :nfs => true, :mount_options => ['nolock,vers=3,udp']
