@@ -105,6 +105,10 @@ Vagrant.configure("2") do |config|
         config.vm.network "forwarded_port", guest: 2375, host: ($expose_docker_tcp + i - 1), host_ip: "127.0.0.1", auto_correct: true
       end
 
+      if $expose_etcd_tcp_port
+        config.vm.network "forwarded_port", guest: 2379, host: ($expose_etcd_tcp_port + i - 1), auto_correct: true
+      end
+
       $forwarded_ports.each do |guest, host|
         config.vm.network "forwarded_port", guest: guest, host: host, auto_correct: true
       end
