@@ -21,6 +21,7 @@ $vm_cpus = 1
 $vb_cpuexecutioncap = 100
 $shared_folders = {}
 $forwarded_ports = {}
+$local_docker_registry_server = false
 
 # Attempt to apply the deprecated environment variable NUM_INSTANCES to
 # $num_instances while allowing config.rb to override it
@@ -142,6 +143,18 @@ Vagrant.configure("2") do |config|
         config.vm.provision :shell, :inline => "mv /tmp/vagrantfile-user-data /var/lib/coreos-vagrant/", :privileged => true
       end
 
+      if $local_docker_registry_server
+        config.vm.provision :shell, :inline => "echo '172.17.8.127 registry.local' > /etc/hosts"
+      end
+
+    end
+  end
+
+  if $local_docker_registry_server
+    config.vm.define vm_name = "registry" do |config|
+      config.vm.hostname = vm_name
+      config.vm.network :private_network, ip: "172.17.8.127"
+      config.vm.provision :shell, :inline => "docker run -d -p 80:5000 --restart=always --name registry registry:2"
     end
   end
 end
