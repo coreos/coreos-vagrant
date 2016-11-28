@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+
+# Optional argument to set target file
+if [ -z "$1" ]; then
+  TARGET='user-data'    # Assume coreos-vagrant standard
+else
+  TARGET="$1"
+fi
+
+function checkToken {
+  cat $TARGET | grep --color=never discovery: | sed 's/\s*discovery: //'
+}
+
+echo -n "Before:"
+checkToken
+
+ESCAPED_TOKEN=$(curl --silent https://discovery.etcd.io/new | sed 's/\//\\\//g')
+sed -i '' "s/discovery:.*/discovery: ${ESCAPED_TOKEN}/" $TARGET
+
+echo -n " After:"
+checkToken
