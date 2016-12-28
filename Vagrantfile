@@ -137,6 +137,9 @@ Vagrant.configure("2") do |config|
         config.vm.synced_folder ENV['HOME'], ENV['HOME'], id: "home", :nfs => true, :mount_options => ['nolock,vers=3,udp']
       end
 
+      # Uncomment below to enable rsync for sharing the host machine into the coreos-vagrant VM.
+      #config.vm.synced_folder ".", "/home/core/share", id: "core", type: "rsync", rsync__exclude: ".git/"
+
       if File.exist?(CLOUD_CONFIG_PATH)
         config.vm.provision :file, :source => "#{CLOUD_CONFIG_PATH}", :destination => "/tmp/vagrantfile-user-data"
         config.vm.provision :shell, :inline => "mv /tmp/vagrantfile-user-data /var/lib/coreos-vagrant/", :privileged => true
