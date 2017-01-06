@@ -1,6 +1,6 @@
 # CoreOS Vagrant
 
-This repo provides a template Vagrantfile to create a CoreOS virtual machine using the VirtualBox software hypervisor.
+This repo provides a template Vagrantfile to create a CoreOS virtual machine using one of the VirtualBox, VMware or Parallels software hypervisors.
 After setup is complete you will have a single CoreOS virtual machine running on your local machine.
 
 ## Contact
@@ -24,34 +24,48 @@ cd coreos-vagrant
 
 3) Startup and SSH
 
-There are two "providers" for Vagrant with slightly different instructions.
-Follow one of the following two options:
+There are three "providers" for Vagrant with slightly different instructions.
+Follow one of the following three options:
 
-**VirtualBox Provider**
+- **VirtualBox Provider**
 
-The VirtualBox provider is the default Vagrant provider. Use this if you are unsure.
+  The VirtualBox provider is the default Vagrant provider. Use this if you are unsure.
 
-```
-vagrant up
-vagrant ssh
-```
+  ```
+  vagrant up
+  vagrant ssh
+  ```
 
-**VMware Provider**
+- **VMware Provider**
 
-The VMware provider is a commercial addon from Hashicorp that offers better stability and speed.
-If you use this provider follow these instructions.
+	The VMware provider is a commercial addon from Hashicorp that offers better stability and speed.
+	If you use this provider follow these instructions.
 
-VMware Fusion:
-```
-vagrant up --provider vmware_fusion
-vagrant ssh
-```
+	- VMware Fusion:
 
-VMware Workstation:
-```
-vagrant up --provider vmware_workstation
-vagrant ssh
-```
+	  ```
+	  vagrant up --provider vmware_fusion
+	  vagrant ssh
+	  ```
+
+	- VMware Workstation:
+
+	  ```
+	  vagrant up --provider vmware_workstation
+	  vagrant ssh
+	  ```
+
+- **Parallels Provider**
+
+  For users of Parallels Desktop and its matching Parallels provider:
+
+  ```
+  vagrant up --provider parallels
+  vagrant ssh
+  ```
+
+  >  Please do note that right now upstream CoreOS does not ship parallels' specific Vagrant boxes, ence the CoreOS parallels box is strictly unnofficial (see all the gory details at [AntonioMeireles/coreos-packer](https://github.com/AntonioMeireles/coreos-packer))
+
 
 ``vagrant up`` triggers vagrant to download the CoreOS image (if necessary) and (re)launch the instance
 
