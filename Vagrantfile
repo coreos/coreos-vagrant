@@ -70,6 +70,20 @@ Vagrant.configure("2") do |config|
     v.functional_vboxsf     = false
   end
 
+  config.vm.provider :parallels do |vb, override|
+      if $update_channel == "alpha"
+	  override.vm.box = "yungsang/coreos-alpha"
+      elsif $update_channel == "beta"
+	  override.vm.box = "yungsang/coreos"
+      else
+	  raise "Update channel '%s' is not supported" % $update_channel
+      end
+      # yungsang's version 0.9.0 is based on CoreOS 310.1.0,
+      # which satisfies ">= 308.0.1".
+      override.vm.box_version = ">= 0.9.0"
+      override.vm.box_url = override.vm.box
+  end
+
   # plugin conflict
   if Vagrant.has_plugin?("vagrant-vbguest") then
     config.vbguest.auto_update = false
@@ -122,6 +136,13 @@ Vagrant.configure("2") do |config|
         vb.memory = vm_memory
         vb.cpus = vm_cpus
         vb.customize ["modifyvm", :id, "--cpuexecutioncap", "#{$vb_cpuexecutioncap}"]
+      end
+
+      config.vm.provider :parallels do |vb|
+	# Headless mode is not supported by PD9,
+	# see https://github.com/Parallels/vagrant-parallels/issues/39
+        vb.memory = $vb_memory
+        vb.cpus = $vb_cpus
       end
 
       ip = "172.17.8.#{i+100}"
