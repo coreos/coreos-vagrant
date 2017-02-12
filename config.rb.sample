@@ -52,6 +52,9 @@ end
 # of the selected channel
 #$image_version = "current"
 
+# Change basename of the VM
+#$instance_name_prefix="projectx-coreos"
+
 # Official CoreOS channel from which updates should be downloaded
 #$update_channel='alpha'
 
