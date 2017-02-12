@@ -79,6 +79,9 @@ end
 #$vm_cpus = 1
 #$vb_cpuexecutioncap = 100
 
+# Share the working directory with coreos-vagrant at /home/core/share
+# $share_work_dir = true
+
 # Share additional folders to the CoreOS VMs
 # For example,
 # $shared_folders = {'/path/on/host' => '/path/on/guest', '/home/foo/app' => '/app'}
