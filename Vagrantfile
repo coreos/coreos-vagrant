@@ -10,6 +10,7 @@ CONFIG = File.join(File.dirname(__FILE__), "config.rb")
 
 # Defaults for config options defined in CONFIG
 $num_instances = 1
+$custom_instance_names = nil
 $instance_name_prefix = "core"
 $update_channel = "alpha"
 $image_version = "current"
@@ -30,6 +31,11 @@ end
 
 if File.exist?(CONFIG)
   require CONFIG
+end
+
+# Correct $num_instances if $custom_instance_names is set.
+if $custom_instance_names != nil
+  $num_instances = $custom_instance_names.size
 end
 
 # Use old vb_xxx config variables when set
@@ -75,8 +81,14 @@ Vagrant.configure("2") do |config|
     config.vbguest.auto_update = false
   end
 
-  (1..$num_instances).each do |i|
-    config.vm.define vm_name = "%s-%02d" % [$instance_name_prefix, i] do |config|
+  # Use custom instance names or generate prefix-based ones.
+  instance_names = $custom_instance_names
+  if instance_names == nil
+    instance_names = (1..$num_instances).map { |i| "%s-%02d" % [$instance_name_prefix, i] }
+  end
+
+  instance_names.each_with_index do |name, i|
+    config.vm.define vm_name = name do |config|
       config.vm.hostname = vm_name
 
       if $enable_serial_logging
