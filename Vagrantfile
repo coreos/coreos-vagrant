@@ -33,11 +33,6 @@ if File.exist?(CONFIG)
   require CONFIG
 end
 
-# Correct $num_instances if $custom_instance_names is set.
-if $custom_instance_names != nil
-  $num_instances = $custom_instance_names.size
-end
-
 # Use old vb_xxx config variables when set
 def vm_gui
   $vb_gui.nil? ? $vm_gui : $vb_gui
