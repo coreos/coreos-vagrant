@@ -94,6 +94,7 @@ See `config.rb.sample` for more information.
 ## Cluster Setup
 
 Launching a CoreOS cluster on Vagrant is as simple as configuring `$num_instances` in a `config.rb` file to 3 (or more!) and running `vagrant up`.
+If you need the specific instance names, set `$custom_instance_names` to a list of name strings.
 Make sure you provide a fresh discovery URL in your `user-data` if you wish to bootstrap etcd in your cluster.
 
 ## New Box Versions
