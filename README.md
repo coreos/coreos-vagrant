@@ -76,10 +76,28 @@ config.vm.synced_folder ".", "/home/core/share", id: "core", :nfs => true,  :mou
 
 After a 'vagrant reload' you will be prompted for your local machine password.
 
-#### Provisioning with user-data
+#### Provisioning with Ignition (VirtualBox Provider (default))
 
-The Vagrantfile will provision your CoreOS VM(s) with [coreos-cloudinit][coreos-cloudinit] if a `user-data` file is found in the project directory.
-coreos-cloudinit simplifies the provisioning process through the use of a script or cloud-config document.
+When using the VirtualBox provider for Vagrant (the default), Ignition is used to provision the machine. This uses a special plugin that is
+automatically installed when using the default Vagrantfile. The config options for the plugin are all prefixed with `config.ignition` and can
+be found in this Vagrantfile or in the README of the [plugin](https://github.com/coreos/vagrant-ignition)
+
+To get started, run `curl https://discovery.etcd.io/new\?size\=X`, where `X` is the number of servers in your cluster (if a size is not provided,
+the default of 3 will be used). More configuration may be added if necessary. Then, use config transpiler to write the Ignition config
+to config.ign by running `ct --platform=vagrant-virtualbox < cl.conf > config.ign`. To see all available configuration options, check out
+the [Container Linux Configuration Specification][clspec] as well as the [Container Linux Config Transpiler Getting Started Documentation][ignition].
+There is also a basic Ignition file provided based on the Container Linux config that is included. To use that instead (not recommended),
+copy `config.ign.sample` to `config.ign` and make any necessary modifications. Check out the [Ignition Getting Started documentation][ignition] 
+to learn about the available features.
+
+[ignition]: https://github.com/coreos/docs/blob/master/os/provisioning.md
+[clspec]: https://github.com/coreos/container-linux-config-transpiler/blob/master/doc/configuration.md
+
+#### Provisioning with user-data (VMWare provider)
+
+When using the VMWare provider for Vagrant, the Vagrantfile will provision your CoreOS VM(s)
+with [coreos-cloudinit][coreos-cloudinit] if a `user-data` file is found in the project directory. coreos-cloudinit simplifies the
+provisioning process through the use of a script or cloud-config document.
 
 To get started, copy `user-data.sample` to `user-data` and make any necessary modifications.
 Check out the [coreos-cloudinit documentation][coreos-cloudinit] to learn about the available features.
@@ -94,7 +112,9 @@ See `config.rb.sample` for more information.
 ## Cluster Setup
 
 Launching a CoreOS cluster on Vagrant is as simple as configuring `$num_instances` in a `config.rb` file to 3 (or more!) and running `vagrant up`.
-Make sure you provide a fresh discovery URL in your `user-data` if you wish to bootstrap etcd in your cluster.
+If using the VirtualBox provider (default), copy the make sure to create a `config.ign` as described above so that the machines can be configured with
+etcd and flanneld correctly. Also, make sure to provide a fresh discovery URL in your `config.ign` file to bootstrap etcd in your cluster.
+If you are using the VMWare provider, make sure you provide a fresh discovery URL in your `user-data` if you wish to bootstrap etcd in your cluster.
 
 ## New Box Versions
 
