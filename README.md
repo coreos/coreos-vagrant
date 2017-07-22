@@ -83,7 +83,7 @@ automatically installed when using the default Vagrantfile. The config options f
 be found in this Vagrantfile or in the README of the [plugin](https://github.com/coreos/vagrant-ignition)
 
 To get started, run `curl https://discovery.etcd.io/new\?size\=X`, where `X` is the number of servers in your cluster (if a size is not provided,
-the default of 3 will be used). More configuration may be added if necessary. Then, use config transpiler to write the Ignition config
+the default of 3 will be used). Then, replace `<token>` in the `cl.conf` file with the generated token from the curl command. More configuration may be added if necessary. Then, use config transpiler to write the Ignition config
 to config.ign by running `ct --platform=vagrant-virtualbox < cl.conf > config.ign`. To see all available configuration options, check out
 the [Container Linux Configuration Specification][clspec] as well as the [Container Linux Config Transpiler Getting Started Documentation][ignition].
 There is also a basic Ignition file provided based on the Container Linux config that is included. To use that instead (not recommended),
