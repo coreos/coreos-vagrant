@@ -159,8 +159,7 @@ Vagrant.configure("2") do |config|
 
       config.vm.provider :virtualbox do |vb|
         config.ignition.hostname = vm_name
-        config.ignition.config_vmdk = File.join(File.dirname(__FILE__), "config" + i.to_s  + ".vmdk")
-        config.ignition.config_img = "config" + i.to_s  + ".img"
+        config.ignition.drive_name = "config" + i.to_s
         # when the ignition config doesn't exist, the plugin automatically generates a very basic Ignition with the ssh key
         # and previously specified options (ip and hostname). Otherwise, it appends those to the provided config.ign below
         if File.exist?(IGNITION_CONFIG_PATH)

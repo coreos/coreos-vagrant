@@ -138,3 +138,8 @@ Follow the [Enable Remote API instructions][coreos-enabling-port-forwarding] to 
 Then you can then use the `docker` command from your local shell by setting `DOCKER_HOST`:
 
     export DOCKER_HOST=tcp://localhost:2375
+
+## Troubleshooting
+If vagrant fails to run successfully, first make sure that the latest version of the coreos-vagrant project has been downloaded, then run
+`vagrant destroy -f` to remove old machines, `vagrant box update` to update the OS box, and `vagrant plugin update vagrant-ignition` to
+update the ignition plugin. If the problems persist after that, please report bugs at https://issues.coreos.com.
