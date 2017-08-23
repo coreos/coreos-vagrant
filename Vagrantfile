@@ -5,15 +5,27 @@ require 'fileutils'
 
 Vagrant.require_version ">= 1.6.0"
 
+# Make sure the vagrant-ignition plugin is installed
+required_plugins = %w(vagrant-ignition)
+
+plugins_to_install = required_plugins.select { |plugin| not Vagrant.has_plugin? plugin }
+if not plugins_to_install.empty?
+  puts "Installing plugins: #{plugins_to_install.join(' ')}"
+  if system "vagrant plugin install #{plugins_to_install.join(' ')}"
+    exec "vagrant #{ARGV.join(' ')}"
+  else
+    abort "Installation of one or more plugins has failed. Aborting."
+  end
+end
+
 CLOUD_CONFIG_PATH = File.join(File.dirname(__FILE__), "user-data")
+IGNITION_CONFIG_PATH = File.join(File.dirname(__FILE__), "config.ign")
 CONFIG = File.join(File.dirname(__FILE__), "config.rb")
 
 # Defaults for config options defined in CONFIG
 $num_instances = 1
 $custom_instance_names = nil
 $instance_name_prefix = "core"
-$update_channel = "alpha"
-$image_version = "current"
 $enable_serial_logging = false
 $share_home = false
 $vm_gui = false
@@ -52,15 +64,12 @@ Vagrant.configure("2") do |config|
   # forward ssh agent to easily ssh into the different machines
   config.ssh.forward_agent = true
 
-  config.vm.box = "coreos-%s" % $update_channel
-  if $image_version != "current"
-      config.vm.box_version = $image_version
-  end
-  config.vm.box_url = "https://storage.googleapis.com/%s.release.core-os.net/amd64-usr/%s/coreos_production_vagrant.json" % [$update_channel, $image_version]
+  config.vm.box = "coreos-alpha"
+  config.vm.box_url = "https://alpha.release.core-os.net/amd64-usr/current/coreos_production_vagrant_virtualbox.json"
 
   ["vmware_fusion", "vmware_workstation"].each do |vmware|
     config.vm.provider vmware do |v, override|
-      override.vm.box_url = "https://storage.googleapis.com/%s.release.core-os.net/amd64-usr/%s/coreos_production_vagrant_vmware_fusion.json" % [$update_channel, $image_version]
+      override.vm.box_url = "https://alpha.release.core-os.net/amd64-usr/current/coreos_production_vagrant_vmware_fusion.json"
     end
   end
 
@@ -69,6 +78,8 @@ Vagrant.configure("2") do |config|
     # in CoreOS, so tell Vagrant that so it can be smarter.
     v.check_guest_additions = false
     v.functional_vboxsf     = false
+    # enable ignition (this is always done on virtualbox as this is how the ssh key is added to the system)
+    config.ignition.enabled = true
   end
 
   # plugin conflict
@@ -129,10 +140,13 @@ Vagrant.configure("2") do |config|
         vb.memory = vm_memory
         vb.cpus = vm_cpus
         vb.customize ["modifyvm", :id, "--cpuexecutioncap", "#{$vb_cpuexecutioncap}"]
+        config.ignition.config_obj = vb
       end
 
       ip = "172.17.8.#{i+100}"
       config.vm.network :private_network, ip: ip
+      # This tells Ignition what the IP for eth1 (the host-only adapter) should be
+      config.ignition.ip = ip
 
       # Uncomment below to enable NFS for sharing the host machine into the coreos-vagrant VM.
       #config.vm.synced_folder ".", "/home/core/share", id: "core", :nfs => true, :mount_options => ['nolock,vers=3,udp']
@@ -144,11 +158,21 @@ Vagrant.configure("2") do |config|
         config.vm.synced_folder ENV['HOME'], ENV['HOME'], id: "home", :nfs => true, :mount_options => ['nolock,vers=3,udp']
       end
 
+      # This shouldn't be used for the virtualbox provider (it doesn't have any effect if it is though)
       if File.exist?(CLOUD_CONFIG_PATH)
         config.vm.provision :file, :source => "#{CLOUD_CONFIG_PATH}", :destination => "/tmp/vagrantfile-user-data"
         config.vm.provision :shell, :inline => "mv /tmp/vagrantfile-user-data /var/lib/coreos-vagrant/", :privileged => true
       end
 
+      config.vm.provider :virtualbox do |vb|
+        config.ignition.hostname = vm_name
+        config.ignition.drive_name = "config" + i.to_s
+        # when the ignition config doesn't exist, the plugin automatically generates a very basic Ignition with the ssh key
+        # and previously specified options (ip and hostname). Otherwise, it appends those to the provided config.ign below
+        if File.exist?(IGNITION_CONFIG_PATH)
+          config.ignition.path = 'config.ign'
+        end
+      end
     end
   end
 end
