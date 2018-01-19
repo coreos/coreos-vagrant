@@ -7,7 +7,7 @@
   "networkd": {
     "units": [
       {
-        "contents": "[Match]\nName=eth1\n\n[Network]\nDomains=vagrant.amobee.com\nAddress=192.168.42.50/24\n",
+        "contents": "[Match]\nName=eth1\n\n[Network]\nDomains=vagrant.amobee.com\n",
         "name": "100-eth1.network"
       }
     ]
