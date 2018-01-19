@@ -4,14 +4,7 @@
     "timeouts": {},
     "version": "2.1.0"
   },
-  "networkd": {
-    "units": [
-      {
-        "contents": "[Match]\nName=eth1\n\n[Network]\nDomains=vagrant.amobee.com\n",
-        "name": "100-eth1.network"
-      }
-    ]
-  },
+  "networkd": {},
   "passwd": {},
   "storage": {
     "directories": [
@@ -73,6 +66,17 @@
       }
     ],
     "files": [
+      {
+        "filesystem": "root",
+        "group": {},
+        "path": "/etc/systemd/network/00-eth1.network.d/domain.conf",
+        "user": {},
+        "contents": {
+          "source": "data:,%5BNetwork%5D%0ADomains%3Dvagrant.amobee.com%0A",
+          "verification": {}
+        },
+        "mode": 493
+      },
       {
         "filesystem": "root",
         "group": {},
