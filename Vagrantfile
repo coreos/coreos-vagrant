@@ -149,8 +149,6 @@ Vagrant.configure("2") do |config|
         vb.cpus = vm_cpus i
         vb.customize ["modifyvm", :id, "--cpuexecutioncap", "#{$vb_cpuexecutioncap}"]
         config.ignition.config_obj = vb
-
-        vb.customize ['modifyvm', :id, '--nictype2', '82545EM']
       end
 
       ["vmware_fusion", "vmware_workstation"].each do |vmware|
@@ -168,7 +166,7 @@ Vagrant.configure("2") do |config|
       end
 
       ip = "172.17.8.#{i+100}"
-      config.vm.network :private_network, ip: ip, adapter: "2"
+      config.vm.network :private_network, ip: ip
       # This tells Ignition what the IP for eth1 (the host-only adapter) should be
       config.ignition.ip = ip
 
