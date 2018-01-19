@@ -8,7 +8,7 @@
     "units": [
       {
         "contents": "[Match]\nName=eth1\n\n[Network]\nDomains=vagrant.amobee.com\nAddress=192.168.42.50/24\n",
-        "name": "00-eth1.network"
+        "name": "100-eth1.network"
       }
     ]
   },
