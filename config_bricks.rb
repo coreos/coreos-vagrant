@@ -61,16 +61,25 @@ end
 # Set the final octet of the IP address
 # The first host will begin at ${ip_prefix}.${ip_range_start}
 # Each subsequent host will take the next IP address in the sequence
-# $ip_range_start = '100'
+$ip_range_start = '50'
 
 # Set the IP address prefix for the VM
 # All hosts in the cluster will use the following prefix for the IP
-# $ip_range_prefix = '172.17.8'
+$ip_range_prefix = '192.168.42'
 
 # Enable NFS sharing of your home directory ($HOME) to CoreOS
 # It will be mounted at the same path in the VM as on the host.
 # Example: /Users/foobar -> /Users/foobar
 #$share_home=false
+$share_home=true
+
+# Customize VMs
+#$vm_gui = false
+#$vm_memory = 1024
+$vm_memory = 5120
+#$vm_cpus = 1
+$vm_cpus = 2
+#$vb_cpuexecutioncap = 100
 
 # Customize VMs
 #$vm_gui = false
@@ -84,6 +93,7 @@ end
 # or, to map host folders to guest folders of the same name,
 # $shared_folders = Hash[*['/home/foo/app1', '/home/foo/app2'].map{|d| [d, d]}.flatten]
 #$shared_folders = {}
+$shared_folders = {'/var/log/amobee' => '/var/log/amobee', '/etc/amobee' => '/etc/amobee', '/var/amobee' => '/var/amobee' }
 
 # Enable port forwarding from guest(s) to host machine, syntax is: { 80 => 8080 }, auto correction is enabled by default.
-#$forwarded_ports = {}
+$forwarded_ports = { 8443 => 8443 }

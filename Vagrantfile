@@ -33,6 +33,8 @@ $vm_cpus = 1
 $vb_cpuexecutioncap = 100
 $shared_folders = {}
 $forwarded_ports = {}
+$ip_range_start = '100'
+$ip_range_prefix = '172.17.8'
 
 # Attempt to apply the deprecated environment variable NUM_INSTANCES to
 # $num_instances while allowing config.rb to override it
@@ -136,7 +138,7 @@ Vagrant.configure("2") do |config|
         config.ignition.config_obj = vb
       end
 
-      ip = "172.17.8.#{i+100}"
+      ip = "#{$ip_range_prefix}.#{i + $ip_range_start.to_i - 1}"
       config.vm.network :private_network, ip: ip
       # This tells Ignition what the IP for eth1 (the host-only adapter) should be
       config.ignition.ip = ip

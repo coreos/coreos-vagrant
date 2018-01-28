@@ -1,8 +1,8 @@
 .vagrant/
 log/
 user-data
-config.rb
-config.ign
+/config.rb*
+/config.ign*
 config.ign.merged
 *.vmdk
 *.img
