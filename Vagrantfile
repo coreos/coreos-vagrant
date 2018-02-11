@@ -154,7 +154,7 @@ Vagrant.configure("2") do |config|
       # This shouldn't be used for the virtualbox provider (it doesn't have any effect if it is though)
       if File.exist?(CLOUD_CONFIG_PATH)
         config.vm.provision :file, :source => "#{CLOUD_CONFIG_PATH}", :destination => "/tmp/vagrantfile-user-data"
-        config.vm.provision :shell, inline: "mkdir /var/lib/coreos-vagrant", :privileged => true
+        config.vm.provision :shell, inline: "mkdir -p /var/lib/coreos-vagrant", :privileged => true
         config.vm.provision :shell, :inline => "mv /tmp/vagrantfile-user-data /var/lib/coreos-vagrant/", :privileged => true
       end
 
