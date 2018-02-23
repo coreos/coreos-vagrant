@@ -8,6 +8,12 @@ IRC: #coreos on freenode.org
 
 Mailing list: [coreos-dev](https://groups.google.com/forum/#!forum/coreos-dev)
 
+## Linux Hosts using VirtualBox
+The virtio NIC driver can cause random reboots
+due to a kernel paging request in the RX path.
+The `linux-virutalbox` branch avoids this issue
+by changing the NIC type to an Intel device.
+
 ## Streamlined setup
 
 1) Install dependencies

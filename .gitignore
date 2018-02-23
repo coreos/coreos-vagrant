@@ -1,4 +1,5 @@
 .vagrant/
+.virtualbox/
 log/
 user-data
 config.rb
