@@ -63,12 +63,12 @@ Vagrant.configure("2") do |config|
   # forward ssh agent to easily ssh into the different machines
   config.ssh.forward_agent = true
 
-  config.vm.box = "coreos-alpha"
-  config.vm.box_url = "https://alpha.release.core-os.net/amd64-usr/current/coreos_production_vagrant_virtualbox.json"
+  config.vm.box = "coreos-stable"
+  config.vm.box_url = "https://stable.release.core-os.net/amd64-usr/current/coreos_production_vagrant_virtualbox.json"
 
   ["vmware_fusion", "vmware_workstation"].each do |vmware|
     config.vm.provider vmware do |v, override|
-      override.vm.box_url = "https://alpha.release.core-os.net/amd64-usr/current/coreos_production_vagrant_vmware_fusion.json"
+      override.vm.box_url = "https://stable.release.core-os.net/amd64-usr/current/coreos_production_vagrant_vmware_fusion.json"
     end
   end
 
