@@ -13,8 +13,7 @@ if File.exists?('user-data') && ARGV[0].eql?('up')
   require 'open-uri'
   require 'yaml'
 
-  token = open($new_discovery_url).read unless $discovery_url
-  token = $discovery_url unless token
+  token = $discover_url || open($new_discovery_url).read
 
   data = YAML.load(IO.readlines('user-data')[1..-1].join)
 
