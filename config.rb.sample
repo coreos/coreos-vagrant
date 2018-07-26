@@ -71,6 +71,7 @@ end
 #$vm_memory = 1024
 #$vm_cpus = 1
 #$vb_cpuexecutioncap = 100
+#$vb_paravirtprovider = "default"
 
 # Share additional folders to the CoreOS VMs
 # For example,
