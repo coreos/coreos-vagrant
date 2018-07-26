@@ -23,6 +23,7 @@ IGNITION_CONFIG_PATH = File.join(File.dirname(__FILE__), "config.ign")
 CONFIG = File.join(File.dirname(__FILE__), "config.rb")
 
 # Defaults for config options defined in CONFIG
+$update_channel='alpha'
 $num_instances = 1
 $update_channel = "alpha"
 $instance_name_prefix = "core"
