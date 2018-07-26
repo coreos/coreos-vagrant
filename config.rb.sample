@@ -61,6 +61,15 @@ end
 #   export DOCKER_HOST='tcp://127.0.0.1:2375'
 #$expose_docker_tcp=2375
 
+# Set the final octet of the IP address
+# The first host will begin at ${ip_prefix}.${ip_range_start}
+# Each subsequent host will take the next IP address in the sequence
+# $ip_range_start = '100'
+
+# Set the IP address prefix for the VM
+# All hosts in the cluster will use the following prefix for the IP
+# $ip_range_prefix = '172.17.8'
+
 # Enable NFS sharing of your home directory ($HOME) to CoreOS
 # It will be mounted at the same path in the VM as on the host.
 # Example: /Users/foobar -> /Users/foobar
